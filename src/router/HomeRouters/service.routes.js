@@ -10,7 +10,7 @@ router.get("/services", serviceController.getActiveServices);
 router.get("/admin/services", protectedRoute, serviceController.getAllServicesAdmin);
 
 router.post("/admin/services", protectedRoute, upload.single("image"), serviceController.createService);
-router.put("/admin/services/:id", protectedRoute, upload.single("image"), serviceController.updateService);
+router.put("/admin/services/:id", protectedRoute,serviceController.updateService);
 router.delete("/admin/services/:id", protectedRoute, serviceController.deleteService);
 
 router.post("/admin/services/:id/image", protectedRoute, upload.single("image"), serviceController.uploadServiceImage);

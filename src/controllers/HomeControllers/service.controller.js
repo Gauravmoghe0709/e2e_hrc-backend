@@ -74,9 +74,9 @@ const createService = async (req, res) => {
 // PUT /api/admin/services/:id
 const updateService = async (req, res) => {
     try {
-        const { title, shortDescription,image, order, isActive } = req.body;
+        const { title, shortDescription,order, isActive } = req.body;
 
-        const updateData = { title, shortDescription, image, order, isActive };
+        const updateData = { title, shortDescription,order, isActive };
 
         // Remove undefined fields
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);

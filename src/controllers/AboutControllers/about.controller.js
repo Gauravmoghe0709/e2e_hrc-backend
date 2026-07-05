@@ -1,222 +1,628 @@
 const AboutHero = require("../../model/About models/AboutHero.model");
 const WhoWeAre = require("../../model/About models/WhoWeAre.model");
 const BridgingTheGap = require("../../model/About models/BridgingTheGap.model");
+const AboutInfo = require("../../model/About models/AboutInfo.model");
 const TeamMember = require("../../model/About models/TeamMember.model");
 const AboutTestimonial = require("../../model/About models/AboutTestimonial.model");
+const WhyChooseE2E = require("../../model/About models/WhyChooseE2E.model");
 const uploadImage = require("../../services/storage.services");
 
-// Helper for image uploads
-const handleImageUpload = async (req, res, Model, id, fieldName, folderName) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: "No image file provided" });
-        }
-        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, folderName);
-        let doc;
-        if (id) {
-            doc = await Model.findById(id);
-        } else {
-            doc = await Model.findOne().sort({ createdAt: -1 });
-            if (!doc) doc = new Model();
-        }
-        if (!doc) return res.status(404).json({ success: false, message: "Document not found" });
-        
-        doc[fieldName] = uploadResponse.url;
-        await doc.save();
-        res.status(200).json({ success: true, message: "Image uploaded successfully", data: doc });
-    } catch (error) {
-        console.error(`Error in handleImageUpload for ${Model.modelName}:`, error);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
+
 
 // ─── ABOUT HERO ───────────────────────────────────────────────────────────────
 
-const getAboutHero = async (req, res) => {
+async function getAboutHero(req, res) {
     try {
-        const data = await AboutHero.findOne().sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: data || {} });
+        const hero = await AboutHero.findOne().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: hero || {} });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const upsertAboutHero = async (req, res) => {
+async function createAboutHero(req, res) {
+    const { subtitle, mainTitle, description, button1Text, button1Link, button2Text, button2Link, isActive } = req.body;
+
+    if (!mainTitle) {
+        return res.status(400).json({
+            success: false,
+            message: "mainTitle is required"
+        });
+    }
+
+    let imageUrl = "";
+
+    if (req.file) {
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-about");
+        imageUrl = uploadResponse.url;
+    }
+
     try {
-        const updateData = { ...req.body };
-        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+       const newhero = await AboutHero.create({
+            subTitle: subtitle,
+            mainTitle,
+            description,
+            button1Text,
+            button1Link,
+            button2Text,
+            button2Link,
+            heroImage: imageUrl,
+            isActive: isActive === 'false' || isActive === false ? false : true
+        });
         
-        let data = await AboutHero.findOne().sort({ createdAt: -1 });
-        if (data) {
-            Object.assign(data, updateData);
-            await data.save();
-        } else {
-            data = new AboutHero(updateData);
-            await data.save();
-        }
-        res.status(200).json({ success: true, message: "Hero saved successfully", data });
+        res.status(201).json({ success: true, message: "About Hero created successfully", data: newhero });
     } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+        
+    }
+
+}
+
+async function updateAboutHero(req, res) {
+    const { subtitle, mainTitle, description, button1Text, button1Link, button2Text, button2Link, isActive } = req.body;
+    const updateData = { subTitle: subtitle, mainTitle, description, button1Text, button1Link, button2Text, button2Link, isActive };
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+    try {
+        const hero = await AboutHero.findByIdAndUpdate(req.params.id, updateData, { returnDocument: "after" });
+        if (!hero) return res.status(404).json({ success: false, message: "About Hero not found" });
+        res.status(200).json({ success: true, message: "About Hero updated successfully", data: hero });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
-
-const uploadAboutHeroImage = (req, res) => handleImageUpload(req, res, AboutHero, null, "heroImage", "e2e-about");
+}
+async function deleteAboutHero (req,res){
+    try {
+        const hero = await AboutHero.findByIdAndDelete(req.params.id);
+        if (!hero) return res.status(404).json({ success: false, message: "About Hero not found" });
+        res.status(200).json({ success: true, message: "About Hero deleted successfully", data: hero });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+async function uploadAboutHeroImage(req, res) {
+    try {
+        const hero = await AboutHero.findById(req.params.id);
+        if (!hero) return res.status(404).json({ success: false, message: "About Hero not found" });
+        
+        if (req.file) {
+            const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-about");
+            hero.heroImage = uploadResponse.url;
+            await hero.save();
+        }
+        
+        res.status(200).json({ success: true, message: "About Hero image uploaded successfully", data: hero });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
 
 // ─── WHO WE ARE ───────────────────────────────────────────────────────────────
 
-const getWhoWeAre = async (req, res) => {
+async function createWhoWeAre(req, res) {
     try {
-        const data = await WhoWeAre.findOne().sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: data || {} });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
+        const { title, image, description1, description2, description3, experienceYears, experienceLabel, isActive } = req.body;
 
-const upsertWhoWeAre = async (req, res) => {
-    try {
-        const updateData = { ...req.body };
-        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        
-        let data = await WhoWeAre.findOne().sort({ createdAt: -1 });
-        if (data) {
-            Object.assign(data, updateData);
-            await data.save();
-        } else {
-            data = new WhoWeAre(updateData);
-            await data.save();
+        // validate required fields
+        if (!title || !title.toString().trim()) {
+            return res.status(400).json({ success: false, message: "title is required" });
         }
-        res.status(200).json({ success: true, message: "Who We Are saved successfully", data });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
 
-const uploadWhoWeAreImage = (req, res) => handleImageUpload(req, res, WhoWeAre, null, "image", "e2e-about");
-
-// ─── BRIDGING THE GAP ─────────────────────────────────────────────────────────
-
-const getBridgingTheGap = async (req, res) => {
-    try {
-        const data = await BridgingTheGap.findOne().sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: data || {} });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
-
-const upsertBridgingTheGap = async (req, res) => {
-    try {
-        const updateData = { ...req.body };
-        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        
-        let data = await BridgingTheGap.findOne().sort({ createdAt: -1 });
-        if (data) {
-            Object.assign(data, updateData);
-            await data.save();
-        } else {
-            data = new BridgingTheGap(updateData);
-            await data.save();
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Image file is required" });
         }
-        res.status(200).json({ success: true, message: "Bridging The Gap saved successfully", data });
+
+        let imageurl = "";
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-about");
+        imageurl = uploadResponse.url;
+
+        if (isActive !== false) {
+            await WhoWeAre.updateMany({ isActive: true }, { $set: { isActive: false } });
+        }
+
+        const whoWeAre = await WhoWeAre.create({
+            title,
+            image: imageurl || "",
+            description1: description1 || "",
+            description2: description2 || "",
+            description3: description3 || "",
+            experienceYears: experienceYears || "",
+            experienceLabel: experienceLabel || "",
+            isActive: isActive ?? true
+        });
+
+        res.status(201).json({ success: true, message: "Who We Are section created successfully", data: whoWeAre });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const uploadBridgingTheGapImage = (req, res) => handleImageUpload(req, res, BridgingTheGap, null, "image", "e2e-about");
-
-// ─── TEAM MEMBERS ─────────────────────────────────────────────────────────────
-
-const getTeamMembers = async (req, res) => {
+async function getWhoWeAre(req, res) {
     try {
-        // Admin gets all, active or not
-        const data = await TeamMember.find().sort({ order: 1, createdAt: 1 });
-        res.status(200).json({ success: true, data });
+        const whoWeAre = await WhoWeAre.findOne({ isActive: true }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: whoWeAre || null });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const createTeamMember = async (req, res) => {
+async function updateWhoWeAre(req, res) {
     try {
-        const member = new TeamMember(req.body);
-        await member.save();
-        res.status(201).json({ success: true, message: "Team member created", data: member });
+        const { title, description1, description2, description3, experienceYears, experienceLabel, isActive } = req.body;
+        const updateData = { title, description1, description2, description3, experienceYears, experienceLabel, isActive };
+
+        Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        if (updateData.isActive !== false) {
+            await WhoWeAre.updateMany({ _id: { $ne: req.params.id }, isActive: true }, { $set: { isActive: false } });
+        }
+
+        const whoWeAre = await WhoWeAre.findByIdAndUpdate(req.params.id, updateData, { returnDocument: "after" });
+
+        if (!whoWeAre) return res.status(404).json({ success: false, message: "Who We Are section not found" });
+
+        res.status(200).json({ success: true, message: "Who We Are section updated successfully", data: whoWeAre });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const updateTeamMember = async (req, res) => {
+async function uploadWhoWeAreImage(req, res) {
     try {
-        const member = await TeamMember.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!member) return res.status(404).json({ success: false, message: "Member not found" });
-        res.status(200).json({ success: true, message: "Team member updated", data: member });
+        const whoWeAre = await WhoWeAre.findById(req.params.id);
+        if (!whoWeAre) return res.status(404).json({ success: false, message: "Who We Are section not found" });
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Image file is required" });
+        }
+
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-about");
+        whoWeAre.image = uploadResponse.url;
+        await whoWeAre.save();
+
+        res.status(200).json({ success: true, message: "Who We Are image uploaded successfully", data: whoWeAre });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const deleteTeamMember = async (req, res) => {
+async function deleteWhoWeAre(req, res) {
     try {
-        const member = await TeamMember.findByIdAndDelete(req.params.id);
-        if (!member) return res.status(404).json({ success: false, message: "Member not found" });
-        res.status(200).json({ success: true, message: "Team member deleted" });
+        const whoWeAre = await WhoWeAre.findByIdAndDelete(req.params.id);
+        if (!whoWeAre) return res.status(404).json({ success: false, message: "Who We Are section not found" });
+
+        res.status(200).json({ success: true, message: "Who We Are section deleted successfully", data: whoWeAre });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const uploadTeamMemberImage = (req, res) => handleImageUpload(req, res, TeamMember, req.params.id, "profileImage", "e2e-about");
+// ─── ABOUT INFO ───────────────────────────────────────────────────────────────
 
-// ─── ABOUT TESTIMONIALS ───────────────────────────────────────────────────────
-
-const getAboutTestimonials = async (req, res) => {
+async function createAboutInfo(req, res) {
     try {
-        const data = await AboutTestimonial.find().sort({ order: 1, createdAt: 1 });
-        res.status(200).json({ success: true, data });
+        const { badgeText, title, description, bulletPoints, isActive } = req.body;
+
+        if (!badgeText?.toString().trim() || !title?.toString().trim() || !description?.toString().trim()) {
+            return res.status(400).json({ success: false, message: "badgeText, title, and description are required" });
+        }
+
+        const normalizedBulletPoints = (Array.isArray(bulletPoints) ? bulletPoints : [])
+            .filter((point) => point && (point.text || point.order !== undefined))
+            .map((point, index) => ({
+                text: point.text?.toString().trim() || "",
+                order: Number.isFinite(Number(point.order)) ? Number(point.order) : index + 1,
+            }))
+            .sort((a, b) => a.order - b.order);
+
+        if (isActive !== false) {
+            await AboutInfo.updateMany({ isActive: true }, { $set: { isActive: false } });
+        }
+
+        const aboutInfo = await AboutInfo.create({
+            badgeText: badgeText.toString().trim(),
+            title: title.toString().trim(),
+            description: description.toString().trim(),
+            bulletPoints: normalizedBulletPoints,
+            isActive: isActive ?? true,
+        });
+
+        res.status(201).json({ success: true, message: "About info created successfully", data: aboutInfo });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const createAboutTestimonial = async (req, res) => {
+async function getAboutInfo(req, res) {
     try {
-        const testimonial = new AboutTestimonial(req.body);
-        await testimonial.save();
-        res.status(201).json({ success: true, message: "Testimonial created", data: testimonial });
+        const aboutInfo = await AboutInfo.findOne({ isActive: true }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: aboutInfo || null });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const updateAboutTestimonial = async (req, res) => {
+async function getAllAboutInfo(req, res) {
     try {
-        const testimonial = await AboutTestimonial.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!testimonial) return res.status(404).json({ success: false, message: "Testimonial not found" });
-        res.status(200).json({ success: true, message: "Testimonial updated", data: testimonial });
+        const aboutInfos = await AboutInfo.find().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: aboutInfos });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const deleteAboutTestimonial = async (req, res) => {
+async function updateAboutInfo(req, res) {
     try {
-        const testimonial = await AboutTestimonial.findByIdAndDelete(req.params.id);
-        if (!testimonial) return res.status(404).json({ success: false, message: "Testimonial not found" });
-        res.status(200).json({ success: true, message: "Testimonial deleted" });
+        const { badgeText, title, description, bulletPoints, isActive } = req.body;
+
+        if (badgeText !== undefined && !badgeText?.toString().trim()) {
+            return res.status(400).json({ success: false, message: "badgeText is required" });
+        }
+        if (title !== undefined && !title?.toString().trim()) {
+            return res.status(400).json({ success: false, message: "title is required" });
+        }
+        if (description !== undefined && !description?.toString().trim()) {
+            return res.status(400).json({ success: false, message: "description is required" });
+        }
+
+        const normalizedBulletPoints = Array.isArray(bulletPoints)
+            ? bulletPoints
+                .filter((point) => point && (point.text || point.order !== undefined))
+                .map((point, index) => ({
+                    text: point.text?.toString().trim() || "",
+                    order: Number.isFinite(Number(point.order)) ? Number(point.order) : index + 1,
+                }))
+                .sort((a, b) => a.order - b.order)
+            : undefined;
+
+        const updateData = {
+            badgeText: badgeText?.toString().trim(),
+            title: title?.toString().trim(),
+            description: description?.toString().trim(),
+            bulletPoints: normalizedBulletPoints,
+            isActive,
+        };
+
+        Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        if (updateData.isActive !== false) {
+            await AboutInfo.updateMany({ _id: { $ne: req.params.id }, isActive: true }, { $set: { isActive: false } });
+        }
+
+        const aboutInfo = await AboutInfo.findByIdAndUpdate(req.params.id, updateData, { returnDocument: "after" });
+
+        if (!aboutInfo) {
+            return res.status(404).json({ success: false, message: "About info section not found" });
+        }
+
+        res.status(200).json({ success: true, message: "About info updated successfully", data: aboutInfo });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+}
 
-const uploadAboutTestimonialImage = (req, res) => handleImageUpload(req, res, AboutTestimonial, req.params.id, "profileImage", "e2e-about");
+async function uploadAboutInfoImage(req, res) {
+    try {
+        const aboutInfo = await AboutInfo.findById(req.params.id);
+        if (!aboutInfo) return res.status(404).json({ success: false, message: "About info section not found" });
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Image file is required" });
+        }
+
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-about");
+        aboutInfo.image = uploadResponse.url;
+        await aboutInfo.save();
+
+        res.status(200).json({ success: true, message: "About info image uploaded successfully", data: aboutInfo });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+async function deleteAboutInfo(req, res) {
+    try {
+        const aboutInfo = await AboutInfo.findByIdAndDelete(req.params.id);
+        if (!aboutInfo) return res.status(404).json({ success: false, message: "About info section not found" });
+
+        res.status(200).json({ success: true, message: "About info deleted successfully", data: aboutInfo });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+// ─── BRIDGING THE GAP ───────────────────────────────────────────────────────
+
+async function createBridgingTheGap(req, res) {
+  try {
+    const { heading, description, feature1, feature2, feature3, isActive } = req.body;
+
+    if (!heading || !heading.toString().trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "heading is required"
+      });
+    }
+
+    let imageUrl = "";
+
+    if (req.file) {
+      const uploadResponse = await uploadImage(
+        req.file.buffer,
+        req.file.originalname,
+        "e2e-about"
+      );
+      imageUrl = uploadResponse.url;
+    }
+
+    const activeValue =
+      isActive === "false" || isActive === false ? false : true;
+
+    if (activeValue === true) {
+      await BridgingTheGap.updateMany(
+        { isActive: true },
+        { $set: { isActive: false } }
+      );
+    }
+
+    const doc = await BridgingTheGap.create({
+      heading: heading.trim(),
+      description: description || "",
+      feature1: feature1 || "",
+      feature2: feature2 || "",
+      feature3: feature3 || "",
+      image: imageUrl,
+      isActive: activeValue
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Bridging the Gap created",
+      data: doc
+    });
+  } catch (error) {
+    console.error("Create BridgingTheGap Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error"
+    });
+  }
+}
+
+async function getBridgingTheGap(req, res) {
+    try {
+        const doc = await BridgingTheGap.findOne({ isActive: true }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: doc || null });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function updateBridgingTheGap(req, res) {
+    try {
+        const { heading, description, feature1, feature2, feature3, isActive } = req.body;
+        const updateData = { heading, description, feature1, feature2, feature3, isActive };
+        Object.keys(updateData).forEach(k => updateData[k] === undefined && delete updateData[k]);
+
+        if (updateData.isActive !== false) {
+            await BridgingTheGap.updateMany({ _id: { $ne: req.params.id }, isActive: true }, { $set: { isActive: false } });
+        }
+
+        const doc = await BridgingTheGap.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
+        if (!doc) return res.status(404).json({ success: false, message: 'Bridging section not found' });
+        res.status(200).json({ success: true, message: 'Bridging section updated', data: doc });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function uploadBridgingTheGapImage(req, res) {
+    try {
+        const doc = await BridgingTheGap.findById(req.params.id);
+        if (!doc) return res.status(404).json({ success: false, message: 'Bridging section not found' });
+        if (!req.file) return res.status(400).json({ success: false, message: 'Image file is required' });
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+        doc.image = uploadResponse.url;
+        await doc.save();
+        res.status(200).json({ success: true, message: 'Image uploaded', data: doc });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function deleteBridgingTheGap(req, res) {
+    try {
+        const doc = await BridgingTheGap.findByIdAndDelete(req.params.id);
+        if (!doc) return res.status(404).json({ success: false, message: 'Bridging section not found' });
+        res.status(200).json({ success: true, message: 'Bridging section deleted', data: doc });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+
+
+
+async function createWhyChoose(req, res) {
+    try {
+        const { sectionTitle, sectionDescription, title, description, displayOrder, isActive } = req.body;
+
+        if (!sectionTitle || !sectionTitle.toString().trim()) {
+            return res.status(400).json({ success: false, message: 'sectionTitle is required' });
+        }
+
+        if (!title || !title.toString().trim()) {
+            return res.status(400).json({ success: false, message: 'title is required' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Image file is required' });
+        }
+
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+        const imageUrl = uploadResponse?.url || '';
+
+        const item = await WhyChooseE2E.create({
+            sectionTitle: sectionTitle.toString().trim(),
+            sectionDescription: sectionDescription?.toString().trim() || '',
+            title: title.toString().trim(),
+            description: description?.toString().trim() || '',
+            image: imageUrl,
+            displayOrder: Number.isFinite(Number(displayOrder)) ? Number(displayOrder) : 0,
+            isActive: isActive === 'false' || isActive === false ? false : true,
+        });
+
+        res.status(201).json({ success: true, message: 'Why Choose E2E card created successfully', data: item });
+    } catch (error) {
+        console.error('Create WhyChoose Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function getWhyChoose(req, res) {
+    try {
+        const items = await WhyChooseE2E.find({ isActive: true }).sort({ displayOrder: 1 });
+        res.status(200).json({ success: true, count: items.length, data: items });
+    } catch (error) {
+        console.error('Get WhyChoose Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function getWhyChooseById(req, res) {
+    try {
+        const item = await WhyChooseE2E.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Why Choose E2E card not found' });
+        }
+        res.status(200).json({ success: true, data: item });
+    } catch (error) {
+        console.error('Get WhyChoose ById Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function updateWhyChoose(req, res) {
+    try {
+        const { sectionTitle, sectionDescription, title, description, displayOrder, isActive } = req.body;
+
+        if (sectionTitle !== undefined && !sectionTitle?.toString().trim()) {
+            return res.status(400).json({ success: false, message: 'sectionTitle is required' });
+        }
+
+        if (title !== undefined && !title?.toString().trim()) {
+            return res.status(400).json({ success: false, message: 'title is required' });
+        }
+
+        const updateData = {
+            sectionTitle: sectionTitle?.toString().trim(),
+            sectionDescription: sectionDescription?.toString().trim(),
+            title: title?.toString().trim(),
+            description: description?.toString().trim(),
+            displayOrder: Number.isFinite(Number(displayOrder)) ? Number(displayOrder) : displayOrder,
+            isActive,
+        };
+
+        Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        const item = await WhyChooseE2E.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Why Choose E2E card not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Why Choose E2E card updated successfully', data: item });
+    } catch (error) {
+        console.error('Update WhyChoose Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function deleteWhyChoose(req, res) {
+    try {
+        const item = await WhyChooseE2E.findByIdAndDelete(req.params.id);
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Why Choose E2E card not found' });
+        }
+        res.status(200).json({ success: true, message: 'Why Choose E2E card deleted successfully', data: item });
+    } catch (error) {
+        console.error('Delete WhyChoose Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function uploadWhyChooseImage(req, res) {
+    try {
+        const item = await WhyChooseE2E.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Why Choose E2E card not found' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Image file is required' });
+        }
+
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+        item.image = uploadResponse?.url || item.image;
+        await item.save();
+
+        res.status(200).json({ success: true, message: 'Why Choose E2E image uploaded successfully', data: item });
+    } catch (error) {
+        console.error('Upload WhyChoose Image Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
 
 module.exports = {
-    getAboutHero, upsertAboutHero, uploadAboutHeroImage,
-    getWhoWeAre, upsertWhoWeAre, uploadWhoWeAreImage,
-    getBridgingTheGap, upsertBridgingTheGap, uploadBridgingTheGapImage,
-    getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember, uploadTeamMemberImage,
-    getAboutTestimonials, createAboutTestimonial, updateAboutTestimonial, deleteAboutTestimonial, uploadAboutTestimonialImage
+    // hero
+    createAboutHero,
+    updateAboutHero,
+    deleteAboutHero,
+    uploadAboutHeroImage,
+    getAboutHero,
+    // who we are
+    createWhoWeAre,
+    getWhoWeAre,
+    updateWhoWeAre,
+    uploadWhoWeAreImage,
+    deleteWhoWeAre,
+    // about info
+    createAboutInfo,
+    getAboutInfo,
+    getAllAboutInfo,
+    updateAboutInfo,
+    uploadAboutInfoImage,
+    deleteAboutInfo,
+    // bridging
+    createBridgingTheGap,
+    getBridgingTheGap,
+    updateBridgingTheGap,
+    uploadBridgingTheGapImage,
+    deleteBridgingTheGap,
+    // why choose e2e
+    createWhyChoose,
+    getWhyChoose,
+    getWhyChooseById,
+    updateWhyChoose,
+    deleteWhyChoose,
+    uploadWhyChooseImage,
 };
+

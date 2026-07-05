@@ -26,4 +26,5 @@ async function protectedRoute(req, res, next) {
   }
 }
 
+
 module.exports = protectedRoute;

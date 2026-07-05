@@ -7,7 +7,7 @@ const upload = require("../../middleware/upload.middleware");
 
 router.get("/hero/home", heroController.getActiveHero);
 
-router.put("/admin/hero/home", heroController.createOrUpdateHero);
+router.put("/admin/hero/home", protectedRoute, heroController.createOrUpdateHero);
 
 router.post(
     "/admin/hero/home/image",

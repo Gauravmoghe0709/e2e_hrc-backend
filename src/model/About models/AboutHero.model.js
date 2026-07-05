@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const aboutHeroSchema = new mongoose.Schema(
     {
         mainTitle: { type: String, required: true },
+        subTitle: { type: String, default: "" },
         description: { type: String, default: "" },
         button1Text: { type: String, default: "" },
         button1Link: { type: String, default: "" },
