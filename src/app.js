@@ -13,6 +13,9 @@ const aboutRouter = require('./router/AboutRouters/about.routes');
 const howWeWorkRouter = require('./router/HomeRouters/howWeWork.routes');
 const locationCardRouter = require('./router/HomeRouters/locationCard.router');
 const whyChooseRouter = require('./router/AboutRouters/whyChoose.routes');
+const employerRouter = require('./router/EmployerRoutes/Employer.routes');
+const footerRouter = require('./router/footer.routes');
+const workforceSolutionRouter = require('./router/WorkforceSolution/workforceSolution.routes');
 
 const app = express();
 
@@ -39,7 +42,17 @@ app.use('/api', contactCTARouter);
 app.use('/api', contactEnquiryRouter);
 app.use('/api', aboutRouter);
 app.use('/api', employerCardRouter);
+app.use('/api', employerRouter);
 app.use('/api', howWeWorkRouter);
 app.use('/api', locationCardRouter);
 app.use('/api', whyChooseRouter);
+app.use('/api', footerRouter);
+app.use('/api', workforceSolutionRouter);
+// Multer file size error handler (for image uploads > 5MB)
+app.use((err, req, res, next) => {
+  if (err && err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ message: 'Image size must be less than 5MB' });
+  }
+  next(err);
+});
 module.exports = app;
