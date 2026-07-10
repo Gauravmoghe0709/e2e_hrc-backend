@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const approachCardSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    subtitle: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, default: "" },
     stat1Value: { type: String, default: "" },

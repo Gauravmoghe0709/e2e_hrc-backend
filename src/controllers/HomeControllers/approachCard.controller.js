@@ -26,23 +26,22 @@ const getAdminApproachCards = async (req, res) => {
 // POST /api/admin/approach-cards
 const createApproachCard = async (req, res) => {
     try {
-        const { title, subtitle, description, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
+        const { title, description, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
 
-        if (!title || !subtitle || !description) {
-            return res.status(400).json({ success: false, message: "Title, subtitle, and description are required" });
+        if (!title || !description) {
+            return res.status(400).json({ success: false, message: "Title and description are required" });
         }
 
         let imageUrl = "";
 
-        if(req.file) {
+        if (req.file) {
             const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "e2e-approach-cards");
             imageUrl = uploadResponse.url;
         }
 
 
         const newCard = await ApproachCard.create({
-              title,
-            subtitle,
+            title,
             description,
             image: imageUrl,
             stat1Value: stat1Value || "",
@@ -50,7 +49,8 @@ const createApproachCard = async (req, res) => {
             stat2Value: stat2Value || "",
             stat2Label: stat2Label || "",
             displayOrder,
-            isActive: isActive !== undefined ? isActive : true})
+            isActive: isActive !== undefined ? isActive : true
+        })
 
         res.status(201).json({ success: true, message: "Approach card created successfully", data: newCard });
     } catch (error) {
@@ -62,9 +62,9 @@ const createApproachCard = async (req, res) => {
 // PUT /api/admin/approach-cards/:id
 const updateApproachCard = async (req, res) => {
     try {
-        const { title, subtitle, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
+        const { title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
 
-        const updateData = { title, subtitle, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive };
+        const updateData = { title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive };
 
         // Remove undefined fields
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
