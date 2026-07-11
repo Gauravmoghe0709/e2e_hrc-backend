@@ -7,12 +7,12 @@ const contactCTAController = require("../../controllers/HomeControllers/contactC
 router.get("/contact-cta", contactCTAController.getcontactCTA);
 
 // Admin — Create new CTA record
-router.post("/admin/contact-cta", protectedRoute, contactCTAController.createcontactCTA);
+router.post("/admin/contact-cta", contactCTAController.createcontactCTA);
 
 // Admin — Update existing CTA record by ID
-router.put("/admin/contact-cta/:id", protectedRoute, contactCTAController.updatecontactCTA);
+router.put("/admin/contact-cta/:id", contactCTAController.updatecontactCTA);
 
 // Admin — Upsert (create if none exists, update if exists)
-router.put("/admin/contact-cta", protectedRoute, contactCTAController.upsertcontactCTA);
+router.put("/admin/contact-cta", contactCTAController.upsertcontactCTA);
 
 module.exports = router;
