@@ -46,4 +46,4 @@ const testimonialCardSchema = new mongoose.Schema(
 
 module.exports =
   mongoose.models.TestimonialCard ||
-  mongoose.model("TestimonialCard", testimonialCardSchema);
+  mongoose.model("workforcesolutionTestimonialCard", testimonialCardSchema);

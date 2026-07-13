@@ -4,6 +4,7 @@ const workforceSolutionController = require('../../controllers/WorkforceSolution
 const howWeWorkSectionController = require("../../controllers/WorkforceSolutionController/howWeWorkSection.controller");
 const howWeWorkStepController = require("../../controllers/WorkforceSolutionController/howWeWorkStep.controller");
 const testimonialController = require("../../controllers/WorkforceSolutionController/testimonial.controller");
+const workforceSolutionFAQController = require("../../controllers/WorkforceSolutionController/FAQsection.controller");
 const upload = require('../../middleware/upload.middleware');
 
 
@@ -53,6 +54,25 @@ router.put("/admin/workforce-solutions/how-we-work-steps/:id", howWeWorkStepCont
 router.delete("/admin/workforce-solutions/how-we-work-steps/:id", howWeWorkStepController.deleteStep);
 
 
+// FAQ Section
+router.get("/workforce-solutions/faq", workforceSolutionFAQController.getWorkforceSolutionFAQ);
+// Admin routes
+router.post("/admin/workforce-solutions/faq", workforceSolutionFAQController.createWorkforceSolutionFAQ);
+router.get("/admin/workforce-solutions/faq", workforceSolutionFAQController.getAdminWorkforceSolutionFAQ);
+router.put("/admin/workforce-solutions/faq/:id", workforceSolutionFAQController.updateWorkforceSolutionFAQ);
+router.delete("/admin/workforce-solutions/faq/:id", workforceSolutionFAQController.deleteWorkforceSolutionFAQ);
+
+// employer CTA routes
+
+// Public API
+router.get("/workforce-solutions/cta", workforceSolutionFAQController.getWorkforceSolutionCTA);
+
+// Admin routes
+router.post("/admin/workforce-solutions/cta", workforceSolutionFAQController.createWorkforceSolutionCTA);
+router.get("/admin/workforce-solutions/cta", workforceSolutionFAQController.getAdminWorkforceSolutionCTA);
+router.put("/admin/workforce-solutions/cta/:id", workforceSolutionFAQController.updateWorkforceSolutionCTA);
+router.delete("/admin/workforce-solutions/cta/:id", workforceSolutionFAQController.deleteWorkforceSolutionCTA);
+
 
 // ─── Public API ───────────────────────────────────────────────────────────
 router.get("/testimonials", testimonialController.getPublicTestimonials);
@@ -63,6 +83,7 @@ router.post("/admin/testimonial-section", testimonialController.createTestimonia
 router.get("/admin/testimonial-section", testimonialController.getAdminTestimonialSections);
 router.put("/admin/testimonial-section/:id", testimonialController.updateTestimonialSection);
 router.delete("/admin/testimonial-section/:id", testimonialController.deleteTestimonialSection);
+//Cards
 router.post("/admin/testimonial-cards", testimonialController.createTestimonialCard);
 router.get("/admin/testimonial-cards", testimonialController.getAdminTestimonialCards);
 router.put("/admin/testimonial-cards/:id", testimonialController.updateTestimonialCard);

@@ -12,7 +12,7 @@ const contactEnquiryRouter = require('./router/HomeRouters/contactEnquiry.routes
 const aboutRouter = require('./router/AboutRouters/about.routes');
 const howWeWorkRouter = require('./router/HomeRouters/howWeWork.routes');
 const locationCardRouter = require('./router/HomeRouters/locationCard.router');
-const whyChooseRouter = require('./router/AboutRouters/whyChoose.routes');
+//const whyChooseRouter = require('./router/AboutRouters/whyChoose.routes');
 const employerRouter = require('./router/EmployerRoutes/Employer.routes');
 const footerRouter = require('./router/footer.routes');
 const workforceSolutionRouter = require('./router/WorkforceSolution/workforceSolution.routes');
@@ -47,7 +47,7 @@ app.use('/api', employerCardRouter);
 app.use('/api', employerRouter);
 app.use('/api', howWeWorkRouter);
 app.use('/api', locationCardRouter);
-app.use('/api', whyChooseRouter);
+//app.use('/api', whyChooseRouter);
 app.use('/api', footerRouter);
 app.use('/api', workforceSolutionRouter);
 app.use('/api', seoRouter);

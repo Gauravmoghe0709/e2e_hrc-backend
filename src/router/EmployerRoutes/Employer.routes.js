@@ -49,5 +49,23 @@ router.get("/admin/employer-cta", EmployerController.getAdminEmployerCTA);
 router.put("/admin/employer-cta/:id", EmployerController.updateEmployerCTA);
 router.delete("/admin/employer-cta/:id", EmployerController.deleteEmployerCTA);
 
+// employer testimonials routes
+
+// Public API
+router.get("/employer/testimonials", EmployerController.getPublicTestimonials);
+
+// Admin section routes
+router.post("/admin/testimonial-section", EmployerController.createTestimonialSection);
+router.get("/admin/testimonial-section", EmployerController.getAdminTestimonialSection);
+router.put("/admin/testimonial-section/:id", EmployerController.updateTestimonialSection);
+router.delete("/admin/testimonial-section/:id", EmployerController.deleteTestimonialSection);
+
+// Admin card routes
+router.post("/admin/testimonial-cards", upload.single("companyLogo"), EmployerController.createTestimonialCard);
+router.get("/admin/testimonial-cards", EmployerController.getAdminTestimonialCards);
+router.get("/admin/testimonial-cards/:id", EmployerController.getAdminTestimonialCardById);
+router.put("/admin/testimonial-cards/:id", EmployerController.updateTestimonialCard);
+router.delete("/admin/testimonial-cards/:id", EmployerController.deleteTestimonialCard);
+router.patch("/admin/testimonial-cards/:id/company-logo", upload.single("companyLogo"), EmployerController.updateTestimonialCardLogo);
 
 module.exports = router;

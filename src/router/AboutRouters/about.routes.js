@@ -47,12 +47,28 @@ router.post('/admin/about/bridging/:id/image', upload.single('image'), aboutCont
 router.delete('/admin/about/bridging/:id', aboutController.deleteBridgingTheGap);
 
 // Why Choose E2E section routes
-router.get('/about/why-choose', aboutController.getWhyChoose);
+router.get('/about/why-choose', aboutController.getWhyChoosePublic);
+
+// Admin routes for Why Choose E2E Section
+router.post('/admin/about/why-choose-section', aboutController.createWhyChooseE2ESection);
+router.get('/admin/about/why-choose-section', aboutController.getAdminWhyChooseE2ESection);
+router.put('/admin/about/why-choose-section/:id', aboutController.updateWhyChooseE2ESection);
+router.delete('/admin/about/why-choose-section/:id', aboutController.deleteWhyChooseE2ESection);
+
+// Admin routes for Why Choose E2E Cards
+router.post('/admin/about/why-choose-cards', upload.single('image'), aboutController.createWhyChooseE2ECard);
+router.get('/admin/about/why-choose-cards', aboutController.getAdminWhyChooseE2ECards);
+router.put('/admin/about/why-choose-cards/:id', aboutController.updateWhyChooseE2ECard);
+router.patch('/admin/about/why-choose-cards/:id/image', upload.single('image'), aboutController.uploadWhyChooseE2ECardImage);
+router.delete('/admin/about/why-choose-cards/:id', aboutController.deleteWhyChooseE2ECard);
+
+/* Old combined routes (kept for backward compatibility during migration)
+router.get('/admin/about/why-choose', aboutController.getAdminWhyChoose);
 router.get('/about/why-choose/:id', aboutController.getWhyChooseById);
 router.post('/admin/about/why-choose', upload.single('image'), aboutController.createWhyChoose);
 router.put('/admin/about/why-choose/:id', aboutController.updateWhyChoose);
 router.delete('/admin/about/why-choose/:id', aboutController.deleteWhyChoose);
-router.post('/admin/about/why-choose/:id/image', upload.single('image'), aboutController.uploadWhyChooseImage);
+router.post('/admin/about/why-choose/:id/image', upload.single('image'), aboutController.uploadWhyChooseImage);*/
 
 
 // Mission & Vision section

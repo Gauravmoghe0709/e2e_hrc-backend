@@ -2,7 +2,10 @@ const employerheromodel = require('../../model/Employer models/employerhero.mode
 const HowWeWork = require('../../model/Employer models/HowWeWork.model');
 const EmployerFAQ = require('../../model/Employer models/EmployerFAQ.model');
 const EmployerCTA = require('../../model/Employer models/EmployerCTA.model');
+const EmployerTestimonialSection = require('../../model/Employer models/EmployerTestimonialSection.model');
+const EmployerTestimonialCard = require('../../model/Employer models/EmployerTestimonialCard.model');
 const uploadImage = require('../../services/storage.services');
+const mongoose = require('mongoose');
 
 const normalizeBoolean = (value) => {
     if (typeof value === 'boolean') return value;
@@ -431,6 +434,277 @@ async function deleteEmployerCTA(req, res) {
     }
 }
 
+// ============ TESTIMONIALS SECTION METHODS ============
+
+async function getPublicTestimonials(req, res) {
+    try {
+        const section = await EmployerTestimonialSection.findOne({ isActive: true }).sort({ createdAt: -1 });
+        const cards = await EmployerTestimonialCard.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                section: section || null,
+                cards: cards || [],
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching public testimonials:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function createTestimonialSection(req, res) {
+    try {
+        const { badgeText, sectionTitle, sectionDescription, isActive } = req.body;
+
+        if (!sectionTitle || !sectionTitle.trim()) {
+            return res.status(400).json({ success: false, message: "Section Title is required." });
+        }
+
+        const existingSection = await EmployerTestimonialSection.findOne();
+        if (existingSection) {
+            return res.status(409).json({ success: false, message: "A testimonial section already exists. Update it instead of creating a new one." });
+        }
+
+        const section = await EmployerTestimonialSection.create({
+            badgeText: badgeText ? badgeText.trim() : 'Testimonials',
+            sectionTitle: sectionTitle.trim(),
+            sectionDescription: sectionDescription ? sectionDescription.trim() : '',
+            isActive: normalizeBoolean(isActive),
+        });
+
+        res.status(201).json({ success: true, message: "Testimonial section created successfully.", data: section });
+    } catch (error) {
+        console.error("Error creating testimonial section:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function getAdminTestimonialSection(req, res) {
+    try {
+        const section = await EmployerTestimonialSection.findOne();
+
+        if (!section) {
+            return res.status(200).json({ success: true, message: "No testimonial section exists.", data: null });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial section fetched successfully.", data: section });
+    } catch (error) {
+        console.error("Error fetching admin testimonial section:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function updateTestimonialSection(req, res) {
+    try {
+        const { id } = req.params;
+        const { badgeText, sectionTitle, sectionDescription, isActive } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid section ID." });
+        }
+
+        if (sectionTitle && !sectionTitle.trim()) {
+            return res.status(400).json({ success: false, message: "Section Title cannot be empty." });
+        }
+
+        const updateData = {};
+        if (badgeText !== undefined) updateData.badgeText = badgeText.trim();
+        if (sectionTitle !== undefined) updateData.sectionTitle = sectionTitle.trim();
+        if (sectionDescription !== undefined) updateData.sectionDescription = sectionDescription.trim();
+        if (isActive !== undefined) updateData.isActive = normalizeBoolean(isActive);
+
+        const section = await EmployerTestimonialSection.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Testimonial section not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial section updated successfully.", data: section });
+    } catch (error) {
+        console.error("Error updating testimonial section:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function deleteTestimonialSection(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid section ID." });
+        }
+
+        const section = await EmployerTestimonialSection.findByIdAndDelete(id);
+
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Testimonial section not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial section deleted successfully.", data: null });
+    } catch (error) {
+        console.error("Error deleting testimonial section:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+// ============ TESTIMONIALS CARD METHODS ============
+
+async function createTestimonialCard(req, res) {
+    try {
+        const { title, reviewText, companyName, reviewerName, reviewerDesignation, order, isActive } = req.body;
+
+        if (!title || !title.trim()) {
+            return res.status(400).json({ success: false, message: "Title is required." });
+        }
+        if (!reviewText || !reviewText.trim()) {
+            return res.status(400).json({ success: false, message: "Review text is required." });
+        }
+
+        let companyLogo = '';
+        if (req.file) {
+            const uploadfile = await uploadImage(req.file.buffer, req.file.originalname, "e2e-employer-testimonials");
+            companyLogo = uploadfile.url;
+        }
+
+        const card = await EmployerTestimonialCard.create({
+            title: title.trim(),
+            reviewText: reviewText.trim(),
+            companyName: companyName ? companyName.trim() : '',
+            companyLogo,
+            reviewerName: reviewerName ? reviewerName.trim() : '',
+            reviewerDesignation: reviewerDesignation ? reviewerDesignation.trim() : '',
+            order: order !== undefined ? Number(order) : 0,
+            isActive: isActive !== undefined ? normalizeBoolean(isActive) : true,
+        });
+
+        res.status(201).json({ success: true, message: "Testimonial card created successfully.", data: card });
+    } catch (error) {
+        console.error("Error creating testimonial card:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function getAdminTestimonialCards(req, res) {
+    try {
+        const cards = await EmployerTestimonialCard.find().sort({ order: 1, createdAt: 1 });
+
+        res.status(200).json({ success: true, message: "Testimonial cards fetched successfully.", data: cards });
+    } catch (error) {
+        console.error("Error fetching testimonial cards:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function getAdminTestimonialCardById(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid card ID." });
+        }
+
+        const card = await EmployerTestimonialCard.findById(id);
+
+        if (!card) {
+            return res.status(404).json({ success: false, message: "Testimonial card not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial card fetched successfully.", data: card });
+    } catch (error) {
+        console.error("Error fetching testimonial card:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function updateTestimonialCard(req, res) {
+    try {
+        const { id } = req.params;
+        const { title, reviewText, companyName, reviewerName, reviewerDesignation, order, isActive } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid card ID." });
+        }
+
+        if (title && !title.trim()) {
+            return res.status(400).json({ success: false, message: "Title cannot be empty." });
+        }
+        if (reviewText && !reviewText.trim()) {
+            return res.status(400).json({ success: false, message: "Review text cannot be empty." });
+        }
+
+        const updateData = {};
+        if (title !== undefined) updateData.title = title.trim();
+        if (reviewText !== undefined) updateData.reviewText = reviewText.trim();
+        if (companyName !== undefined) updateData.companyName = companyName.trim();
+        if (reviewerName !== undefined) updateData.reviewerName = reviewerName.trim();
+        if (reviewerDesignation !== undefined) updateData.reviewerDesignation = reviewerDesignation.trim();
+        if (order !== undefined) updateData.order = Number(order);
+        if (isActive !== undefined) updateData.isActive = normalizeBoolean(isActive);
+
+        const card = await EmployerTestimonialCard.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!card) {
+            return res.status(404).json({ success: false, message: "Testimonial card not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial card updated successfully.", data: card });
+    } catch (error) {
+        console.error("Error updating testimonial card:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function deleteTestimonialCard(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid card ID." });
+        }
+
+        const card = await EmployerTestimonialCard.findByIdAndDelete(id);
+
+        if (!card) {
+            return res.status(404).json({ success: false, message: "Testimonial card not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial card deleted successfully.", data: null });
+    } catch (error) {
+        console.error("Error deleting testimonial card:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function updateTestimonialCardLogo(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid card ID." });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "No logo file provided." });
+        }
+
+        const uploadfile = await uploadImage(req.file.buffer, req.file.originalname, "e2e-employer-testimonials");
+        const companyLogo = uploadfile.url;
+
+        const card = await EmployerTestimonialCard.findByIdAndUpdate(id, { companyLogo }, { new: true });
+
+        if (!card) {
+            return res.status(404).json({ success: false, message: "Testimonial card not found." });
+        }
+
+        res.status(200).json({ success: true, message: "Testimonial card logo updated successfully.", data: card });
+    } catch (error) {
+        console.error("Error updating testimonial card logo:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
 module.exports = {
     getEmployerHero,
     createEmployerHero,
@@ -452,4 +726,15 @@ module.exports = {
     getEmployerCTA,
     updateEmployerCTA,
     deleteEmployerCTA,
+    getPublicTestimonials,
+    createTestimonialSection,
+    getAdminTestimonialSection,
+    updateTestimonialSection,
+    deleteTestimonialSection,
+    createTestimonialCard,
+    getAdminTestimonialCards,
+    getAdminTestimonialCardById,
+    updateTestimonialCard,
+    deleteTestimonialCard,
+    updateTestimonialCardLogo,
 };

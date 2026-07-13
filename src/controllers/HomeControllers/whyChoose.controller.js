@@ -1,4 +1,4 @@
-const WhyChoose = require("../../model/Home models/WhyChoose.model");
+const WhyChoose = require("../../model/About models/WhyChooseE2E.model");
 const uploadImage = require("../../services/storage.services");
 
 // GET /api/why-choose

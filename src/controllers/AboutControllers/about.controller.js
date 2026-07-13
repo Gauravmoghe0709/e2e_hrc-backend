@@ -5,6 +5,8 @@ const AboutInfo = require("../../model/About models/AboutInfo.model");
 const TeamMember = require("../../model/About models/TeamMember.model");
 const AboutTestimonial = require("../../model/About models/AboutTestimonial.model");
 const WhyChooseE2E = require("../../model/About models/WhyChooseE2E.model");
+const WhyChooseE2ESection = require("../../model/About models/WhyChooseE2ESection.model");
+const WhyChooseE2ECard = require("../../model/About models/WhyChooseE2ECard.model");
 const uploadImage = require("../../services/storage.services");
 
 
@@ -462,7 +464,7 @@ async function deleteBridgingTheGap(req, res) {
 
 
 
-async function createWhyChoose(req, res) {
+/*async function createWhyChoose(req, res) {
     try {
         const { sectionTitle, sectionDescription, title, description, displayOrder, isActive } = req.body;
 
@@ -474,12 +476,12 @@ async function createWhyChoose(req, res) {
             return res.status(400).json({ success: false, message: 'title is required' });
         }
 
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Image file is required' });
-        }
+        let imageUrl = '';
 
-        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
-        const imageUrl = uploadResponse?.url || '';
+        if (req.file) {
+            const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+            imageUrl = uploadResponse?.url || '';
+        }
 
         const item = await WhyChooseE2E.create({
             sectionTitle: sectionTitle.toString().trim(),
@@ -504,6 +506,16 @@ async function getWhyChoose(req, res) {
         res.status(200).json({ success: true, count: items.length, data: items });
     } catch (error) {
         console.error('Get WhyChoose Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function getAdminWhyChoose(req, res) {
+    try {
+        const items = await WhyChooseE2E.find().sort({ displayOrder: 1 });
+        res.status(200).json({ success: true, count: items.length, data: items });
+    } catch (error) {
+        console.error('Get Admin WhyChoose Error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
@@ -589,6 +601,289 @@ async function uploadWhyChooseImage(req, res) {
         console.error('Upload WhyChoose Image Error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
+}*/
+
+// ─── WHY CHOOSE E2E SECTION ───────────────────────────────────────────────────
+
+async function createWhyChooseE2ESection(req, res) {
+    try {
+        const { sectionTitle, sectionDescription, isActive } = req.body;
+
+        if (!sectionTitle || !sectionTitle.toString().trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'sectionTitle is required',
+            });
+        }
+
+        const section = await WhyChooseE2ESection.create({
+            sectionTitle: sectionTitle.toString().trim(),
+            sectionDescription: sectionDescription?.toString().trim() || '',
+            isActive: isActive === 'false' || isActive === false ? false : true,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Why Choose E2E section created successfully',
+            data: section,
+        });
+    } catch (error) {
+        console.error('Create WhyChooseE2ESection Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function getAdminWhyChooseE2ESection(req, res) {
+    try {
+        const section = await WhyChooseE2ESection.findOne().sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            data: section || null,
+        });
+    } catch (error) {
+        console.error('Get WhyChooseE2ESection Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function updateWhyChooseE2ESection(req, res) {
+    try {
+        const { sectionTitle, sectionDescription, isActive } = req.body;
+
+        if (sectionTitle !== undefined && !sectionTitle?.toString().trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'sectionTitle is required',
+            });
+        }
+
+        const updateData = {
+            sectionTitle: sectionTitle?.toString().trim(),
+            sectionDescription: sectionDescription?.toString().trim(),
+            isActive,
+        };
+
+        Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        if (updateData.isActive !== false) {
+            await WhyChooseE2ESection.updateMany(
+                { _id: { $ne: req.params.id }, isActive: true },
+                { $set: { isActive: false } }
+            );
+        }
+
+        const section = await WhyChooseE2ESection.findByIdAndUpdate(req.params.id, updateData, {
+            returnDocument: 'after',
+        });
+
+        if (!section) {
+            return res.status(404).json({
+                success: false,
+                message: 'Why Choose E2E section not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Why Choose E2E section updated successfully',
+            data: section,
+        });
+    } catch (error) {
+        console.error('Update WhyChooseE2ESection Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function deleteWhyChooseE2ESection(req, res) {
+    try {
+        const section = await WhyChooseE2ESection.findByIdAndDelete(req.params.id);
+
+        if (!section) {
+            return res.status(404).json({
+                success: false,
+                message: 'Why Choose E2E section not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Why Choose E2E section deleted successfully',
+            data: section,
+        });
+    } catch (error) {
+        console.error('Delete WhyChooseE2ESection Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// ─── WHY CHOOSE E2E CARDS ─────────────────────────────────────────────────────
+
+async function createWhyChooseE2ECard(req, res) {
+    try {
+        const { title, description, displayOrder, isActive } = req.body;
+
+        if (!title || !title.toString().trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'title is required',
+            });
+        }
+
+        let imageUrl = '';
+
+        if (req.file) {
+            const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+            imageUrl = uploadResponse?.url || '';
+        }
+
+        const card = await WhyChooseE2ECard.create({
+            title: title.toString().trim(),
+            description: description?.toString().trim() || '',
+            image: imageUrl,
+            displayOrder: Number.isFinite(Number(displayOrder)) ? Number(displayOrder) : 0,
+            isActive: isActive === 'false' || isActive === false ? false : true,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Why Choose E2E card created successfully',
+            data: card,
+        });
+    } catch (error) {
+        console.error('Create WhyChooseE2ECard Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function getAdminWhyChooseE2ECards(req, res) {
+    try {
+        const cards = await WhyChooseE2ECard.find().sort({ displayOrder: 1, createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            count: cards.length,
+            data: cards,
+        });
+    } catch (error) {
+        console.error('Get WhyChooseE2ECards Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function updateWhyChooseE2ECard(req, res) {
+    try {
+        const { title, description, displayOrder, isActive } = req.body;
+
+        if (title !== undefined && !title?.toString().trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'title is required',
+            });
+        }
+
+        const updateData = {
+            title: title?.toString().trim(),
+            description: description?.toString().trim(),
+            displayOrder: Number.isFinite(Number(displayOrder)) ? Number(displayOrder) : displayOrder,
+            isActive,
+        };
+
+        Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+        const card = await WhyChooseE2ECard.findByIdAndUpdate(req.params.id, updateData, {
+            returnDocument: 'after',
+        });
+
+        if (!card) {
+            return res.status(404).json({
+                success: false,
+                message: 'Why Choose E2E card not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Why Choose E2E card updated successfully',
+            data: card,
+        });
+    } catch (error) {
+        console.error('Update WhyChooseE2ECard Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function uploadWhyChooseE2ECardImage(req, res) {
+    try {
+        const card = await WhyChooseE2ECard.findById(req.params.id);
+
+        if (!card) {
+            return res.status(404).json({
+                success: false,
+                message: 'Why Choose E2E card not found',
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Image file is required',
+            });
+        }
+
+        const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-about');
+        card.image = uploadResponse?.url || card.image;
+        await card.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Why Choose E2E card image uploaded successfully',
+            data: card,
+        });
+    } catch (error) {
+        console.error('Upload WhyChooseE2ECard Image Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+async function deleteWhyChooseE2ECard(req, res) {
+    try {
+        const card = await WhyChooseE2ECard.findByIdAndDelete(req.params.id);
+
+        if (!card) {
+            return res.status(404).json({
+                success: false,
+                message: 'Why Choose E2E card not found',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Why Choose E2E card deleted successfully',
+            data: card,
+        });
+    } catch (error) {
+        console.error('Delete WhyChooseE2ECard Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// ─── WHY CHOOSE E2E PUBLIC API ────────────────────────────────────────────────
+
+async function getWhyChoosePublic(req, res) {
+    try {
+        const section = await WhyChooseE2ESection.findOne({ isActive: true }).sort({ createdAt: -1 });
+        const cards = await WhyChooseE2ECard.find({ isActive: true }).sort({ displayOrder: 1 });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                section: section || null,
+                cards: cards || [],
+            },
+        });
+    } catch (error) {
+        console.error('Get WhyChoosePublic Error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 }
 
 module.exports = {
@@ -617,12 +912,27 @@ module.exports = {
     updateBridgingTheGap,
     uploadBridgingTheGapImage,
     deleteBridgingTheGap,
-    // why choose e2e
-    createWhyChoose,
+    // why choose e2e (old combined)
+   /* createWhyChoose,
     getWhyChoose,
+    getAdminWhyChoose,
     getWhyChooseById,
     updateWhyChoose,
     deleteWhyChoose,
-    uploadWhyChooseImage,
+    uploadWhyChooseImage,*/
+
+    // why choose e2e section (new separated)
+    createWhyChooseE2ESection,
+    getAdminWhyChooseE2ESection,
+    updateWhyChooseE2ESection,
+    deleteWhyChooseE2ESection,
+    // why choose e2e cards (new separated)
+    createWhyChooseE2ECard,
+    getAdminWhyChooseE2ECards,
+    updateWhyChooseE2ECard,
+    uploadWhyChooseE2ECardImage,
+    deleteWhyChooseE2ECard,
+    // why choose e2e public (new combined for public API)
+    getWhyChoosePublic,
 };
 

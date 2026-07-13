@@ -1,11 +1,11 @@
-const express = require('express');
+/*const express = require('express');
 const router = express.Router();
 const whyChooseController = require('../../controllers/HomeControllers/whyChoose.controller');
 //const protectedRoute = require('../../middleware/auth.middleware');
 const upload = require('../../middleware/upload.middleware');
 
 // Public routes
-router.get('/why-choose', whyChooseController.getActiveWhyChoose);
+router.get('/about-us/why-choose', whyChooseController.getActiveWhyChoose);
 
 // Admin routes
 router.get('/admin/why-choose', //protectedRoute, 
@@ -21,4 +21,4 @@ router.delete('/admin/why-choose/:id', //protectedRoute,
 router.post('/admin/why-choose/:id/image', //protectedRoute, 
   upload.single('image'), whyChooseController.uploadWhyChooseImage);
 
-module.exports = router;
+module.exports = router;*/
