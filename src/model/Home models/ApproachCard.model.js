@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const approachCardSchema = new mongoose.Schema({
+    badge: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, default: "" },

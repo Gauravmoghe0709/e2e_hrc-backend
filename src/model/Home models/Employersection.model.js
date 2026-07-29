@@ -30,10 +30,6 @@ const employeerSchema = new mongoose.Schema({
     enum: ['employer', 'employee'],
     required: true,
   },
-  image: {
-    type: String,
-    default: '',
-  },
   displayOrder: {
     type: Number,
     required: true,

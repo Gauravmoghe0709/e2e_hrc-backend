@@ -1,20 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-//const protectedRoute = require("../../middleware/auth.middleware");
+const protectedRoute = require("../../middleware/auth.middleware");
 const aboutController = require("../../controllers/AboutControllers/about.controller");
 const missionVisionController = require("../../controllers/AboutControllers/missionVision.controller");
-const testimonialController = require("../../controllers/AboutControllers/testimonial.controller");
+const journeyController = require("../../controllers/AboutControllers/journey.controller");
 const upload = multer({ storage: multer.memoryStorage() });
 
 // public route to get the About Hero section
 router.get("/about/hero", aboutController.getAboutHero);
 
 // admin routes for managing the About Hero section
-router.post("/hero",  upload.single("heroImage"), aboutController.createAboutHero);
-router.put("/hero/:id", aboutController.updateAboutHero);
-router.delete("/hero/:id", aboutController.deleteAboutHero);
-router.post("/hero/:id/image", upload.single("heroImage"), aboutController.uploadAboutHeroImage);
+router.post("/hero", protectedRoute, upload.single("heroImage"), aboutController.createAboutHero);
+router.put("/hero/:id", protectedRoute, aboutController.updateAboutHero);
+router.delete("/hero/:id", protectedRoute, aboutController.deleteAboutHero);
+router.post("/hero/:id/image", protectedRoute, upload.single("heroImage"), aboutController.uploadAboutHeroImage);
 
 
 // Who We Are section routes
@@ -22,45 +22,45 @@ router.post("/hero/:id/image", upload.single("heroImage"), aboutController.uploa
 router.get("/about/who-we-are", aboutController.getWhoWeAre);
 
 // admin routes for managing the Who We Are section
-router.post("/admin/about/who-we-are", upload.single("image"), aboutController.createWhoWeAre);
-router.put("/admin/about/who-we-are/:id", aboutController.updateWhoWeAre);
-router.post("/admin/about/who-we-are/:id/image", upload.single("image"), aboutController.uploadWhoWeAreImage);
-router.delete("/admin/about/who-we-are/:id", aboutController.deleteWhoWeAre);
+router.post("/admin/about/who-we-are", protectedRoute, upload.single("image"), aboutController.createWhoWeAre);
+router.put("/admin/about/who-we-are/:id", protectedRoute, aboutController.updateWhoWeAre);
+router.post("/admin/about/who-we-are/:id/image", protectedRoute, upload.single("image"), aboutController.uploadWhoWeAreImage);
+router.delete("/admin/about/who-we-are/:id", protectedRoute, aboutController.deleteWhoWeAre);
 
 // About Info section
 // public route to get the active About Info section
 router.get("/about-info", aboutController.getAboutInfo);
 
 // admin routes for managing the About Info section
-router.get("/admin/about-info", aboutController.getAllAboutInfo);
-router.post("/admin/about-info", aboutController.createAboutInfo);
-router.put("/admin/about-info/:id", aboutController.updateAboutInfo);
-router.post("/admin/about-info/:id/image", upload.single("image"), aboutController.uploadAboutInfoImage);
-router.delete("/admin/about-info/:id", aboutController.deleteAboutInfo);
+router.get("/admin/about-info", protectedRoute, aboutController.getAllAboutInfo);
+router.post("/admin/about-info", protectedRoute, aboutController.createAboutInfo);
+router.put("/admin/about-info/:id", protectedRoute, aboutController.updateAboutInfo);
+router.post("/admin/about-info/:id/image", protectedRoute, upload.single("image"), aboutController.uploadAboutInfoImage);
+router.delete("/admin/about-info/:id", protectedRoute, aboutController.deleteAboutInfo);
 
 // Bridging the Gap routes (public)
 router.get('/about/bridging', aboutController.getBridgingTheGap);
 // Admin routes for managing Bridging the Gap section
-router.post('/admin/about/bridging', upload.single('image'), aboutController.createBridgingTheGap);
-router.put('/admin/about/bridging/:id', aboutController.updateBridgingTheGap);
-router.post('/admin/about/bridging/:id/image', upload.single('image'), aboutController.uploadBridgingTheGapImage);
-router.delete('/admin/about/bridging/:id', aboutController.deleteBridgingTheGap);
+router.post('/admin/about/bridging', protectedRoute, upload.single('image'), aboutController.createBridgingTheGap);
+router.put('/admin/about/bridging/:id', protectedRoute, aboutController.updateBridgingTheGap);
+router.post('/admin/about/bridging/:id/image', protectedRoute, upload.single('image'), aboutController.uploadBridgingTheGapImage);
+router.delete('/admin/about/bridging/:id', protectedRoute, aboutController.deleteBridgingTheGap);
 
 // Why Choose E2E section routes
 router.get('/about/why-choose', aboutController.getWhyChoosePublic);
 
 // Admin routes for Why Choose E2E Section
-router.post('/admin/about/why-choose-section', aboutController.createWhyChooseE2ESection);
-router.get('/admin/about/why-choose-section', aboutController.getAdminWhyChooseE2ESection);
-router.put('/admin/about/why-choose-section/:id', aboutController.updateWhyChooseE2ESection);
-router.delete('/admin/about/why-choose-section/:id', aboutController.deleteWhyChooseE2ESection);
+router.post('/admin/about/why-choose-section', protectedRoute, aboutController.createWhyChooseE2ESection);
+router.get('/admin/about/why-choose-section', protectedRoute, aboutController.getAdminWhyChooseE2ESection);
+router.put('/admin/about/why-choose-section/:id', protectedRoute, aboutController.updateWhyChooseE2ESection);
+router.delete('/admin/about/why-choose-section/:id', protectedRoute, aboutController.deleteWhyChooseE2ESection);
 
 // Admin routes for Why Choose E2E Cards
-router.post('/admin/about/why-choose-cards', upload.single('image'), aboutController.createWhyChooseE2ECard);
-router.get('/admin/about/why-choose-cards', aboutController.getAdminWhyChooseE2ECards);
-router.put('/admin/about/why-choose-cards/:id', aboutController.updateWhyChooseE2ECard);
-router.patch('/admin/about/why-choose-cards/:id/image', upload.single('image'), aboutController.uploadWhyChooseE2ECardImage);
-router.delete('/admin/about/why-choose-cards/:id', aboutController.deleteWhyChooseE2ECard);
+router.post('/admin/about/why-choose-cards', protectedRoute, upload.single('image'), aboutController.createWhyChooseE2ECard);
+router.get('/admin/about/why-choose-cards', protectedRoute, aboutController.getAdminWhyChooseE2ECards);
+router.put('/admin/about/why-choose-cards/:id', protectedRoute, aboutController.updateWhyChooseE2ECard);
+router.patch('/admin/about/why-choose-cards/:id/image', protectedRoute, upload.single('image'), aboutController.uploadWhyChooseE2ECardImage);
+router.delete('/admin/about/why-choose-cards/:id', protectedRoute, aboutController.deleteWhyChooseE2ECard);
 
 /* Old combined routes (kept for backward compatibility during migration)
 router.get('/admin/about/why-choose', aboutController.getAdminWhyChoose);
@@ -73,20 +73,26 @@ router.post('/admin/about/why-choose/:id/image', upload.single('image'), aboutCo
 
 // Mission & Vision section
 router.get("/about/mission-vision", missionVisionController.getMissionVision);
-router.get("/admin/about/mission-vision", missionVisionController.getAdminMissionVision);
-router.get("/admin/about/mission-vision/:id", missionVisionController.getMissionVisionById);
-router.post("/admin/about/mission-vision", missionVisionController.createMissionVision);
-router.put("/admin/about/mission-vision/:id", missionVisionController.updateMissionVision);
-router.delete("/admin/about/mission-vision/:id", missionVisionController.deleteMissionVision);
 
-// Testimonials section
-// public route to get the active testimonials
-router.get("/about/testimonials", testimonialController.getTestimonials);
-// admin routes for managing testimonials
-router.get("/admin/about/testimonials", testimonialController.getAdminTestimonials);
-router.get("/admin/about/testimonials/:id", testimonialController.getTestimonialById);
-router.post("/admin/about/testimonials",  testimonialController.createTestimonial);
-router.put("/admin/about/testimonials/:id", testimonialController.updateTestimonial);
-router.delete("/admin/about/testimonials/:id", testimonialController.deleteTestimonial);
+router.get("/admin/about/mission-vision", protectedRoute, missionVisionController.getAdminMissionVision);
+router.get("/admin/about/mission-vision/:id", protectedRoute, missionVisionController.getMissionVisionById);
+router.post("/admin/about/mission-vision", protectedRoute, missionVisionController.createMissionVision);
+router.put("/admin/about/mission-vision/:id", protectedRoute, missionVisionController.updateMissionVision);
+router.delete("/admin/about/mission-vision/:id", protectedRoute, missionVisionController.deleteMissionVision);
+
+// ── Journey Section ──────────────────────────────────────────────────────────
+// Public
+router.get("/journey", journeyController.getPublicJourney);
+// Admin - Journey Section (only one doc; POST creates or updates)
+router.post("/admin/journey-section", protectedRoute, journeyController.createOrUpdateJourneySection);
+router.get("/admin/journey-section", protectedRoute, journeyController.getAdminJourneySection);
+router.put("/admin/journey-section/:id", protectedRoute, journeyController.updateJourneySection);
+router.delete("/admin/journey-section/:id", protectedRoute, journeyController.deleteJourneySection);
+// Admin - Journey Timeline Cards
+router.post("/admin/journey-cards", protectedRoute, journeyController.createJourneyCard);
+router.get("/admin/journey-cards", protectedRoute, journeyController.getAdminJourneyCards);
+router.get("/admin/journey-cards/:id", protectedRoute, journeyController.getJourneyCardById);
+router.put("/admin/journey-cards/:id", protectedRoute, journeyController.updateJourneyCard);
+router.delete("/admin/journey-cards/:id", protectedRoute, journeyController.deleteJourneyCard);
 
 module.exports = router;

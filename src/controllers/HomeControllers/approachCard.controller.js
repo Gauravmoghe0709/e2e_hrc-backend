@@ -1,7 +1,7 @@
 const ApproachCard = require("../../model/Home models/ApproachCard.model");
 const uploadImage = require("../../services/storage.services");
 
-// GET /api/approach-cards
+// GET /api/approach-cards 
 const getActiveApproachCards = async (req, res) => {
     try {
         const cards = await ApproachCard.find({ isActive: true }).sort({ displayOrder: 1 });
@@ -26,7 +26,7 @@ const getAdminApproachCards = async (req, res) => {
 // POST /api/admin/approach-cards
 const createApproachCard = async (req, res) => {
     try {
-        const { title, description, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
+        const { badge,title, description, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
 
         if (!title || !description) {
             return res.status(400).json({ success: false, message: "Title and description are required" });
@@ -41,6 +41,7 @@ const createApproachCard = async (req, res) => {
 
 
         const newCard = await ApproachCard.create({
+            badge,
             title,
             description,
             image: imageUrl,
@@ -62,9 +63,9 @@ const createApproachCard = async (req, res) => {
 // PUT /api/admin/approach-cards/:id
 const updateApproachCard = async (req, res) => {
     try {
-        const { title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
+        const { badge,title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive } = req.body;
 
-        const updateData = { title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive };
+        const updateData = { badge,title, description, image, stat1Value, stat1Label, stat2Value, stat2Label, displayOrder, isActive };
 
         // Remove undefined fields
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);

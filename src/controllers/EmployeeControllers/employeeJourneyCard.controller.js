@@ -4,26 +4,44 @@ const mongoose = require("mongoose");
 // POST /admin/employee-journey-cards
 exports.createEmployeeJourneyCard = async (req, res) => {
   try {
+    // Maximum 6 cards allowed
+    const totalCount = await EmployeeJourneyCard.countDocuments();
+
+    if (totalCount >= 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum 6 cards are allowed.",
+      });
+    }
+
     let { title, order, isActive } = req.body;
 
     if (!title || !title.trim()) {
-      return res.status(400).json({ success: false, message: "Title is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Title is required",
+      });
     }
-    
+
     title = title.trim();
 
     let orderNum = 0;
+
     if (order !== undefined && order !== "") {
       orderNum = Number(order);
+
       if (isNaN(orderNum) || orderNum < 0) {
-        return res.status(400).json({ success: false, message: "Invalid order value" });
+        return res.status(400).json({
+          success: false,
+          message: "Invalid order value",
+        });
       }
     }
 
-    let activeStatus = true;
-    if (isActive !== undefined) {
-      activeStatus = isActive === "true" || isActive === true;
-    }
+    const activeStatus =
+      isActive !== undefined
+        ? isActive === true || isActive === "true"
+        : true;
 
     const newCard = await EmployeeJourneyCard.create({
       title,
@@ -31,11 +49,20 @@ exports.createEmployeeJourneyCard = async (req, res) => {
       isActive: activeStatus,
     });
 
-    res.status(201).json({ success: true, message: "Card created successfully", data: newCard });
+    return res.status(201).json({
+      success: true,
+      message: "Card created successfully.",
+      data: newCard,
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
   }
-};
+};;
 
 // GET /admin/employee-journey-cards
 exports.getAdminEmployeeJourneyCards = async (req, res) => {

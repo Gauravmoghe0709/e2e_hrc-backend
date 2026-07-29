@@ -28,11 +28,6 @@ async function createEmployeeCard(req, res) {
     }
 
     try {
-        let imageUrl = '';
-        if (req.file) {
-            const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-employee-cards');
-            imageUrl = uploadResponse?.url || '';
-        }
 
         const newEmployeeCard = await employeCardmodel.create({
             badgeText: badgeText.trim(),
@@ -42,7 +37,6 @@ async function createEmployeeCard(req, res) {
             buttonText: buttonText.trim(),
             buttonLink: buttonLink.trim(),
             cardType,
-            image: imageUrl,
             displayOrder: normalizedDisplayOrder,
             isActive: isActive !== undefined ? isActive : true,
         });
@@ -68,16 +62,6 @@ async function updateEmployeeCard(req, res) {
     }
 
     try {
-        let imageUrl;
-        if (req.file) {
-            const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, 'e2e-employee-cards');
-            imageUrl = uploadResponse?.url || '';
-        }
-
-        if (imageUrl !== undefined) {
-            updateData.image = imageUrl;
-        }
-
         const updatedEmployeeCard = await employeCardmodel.findByIdAndUpdate(id, {
             ...updateData,
             badgeText: updateData.badgeText.trim(),

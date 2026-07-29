@@ -8,7 +8,7 @@ async function registeruser(req, res) {
     try{
         const isuser = await usermodel.findOne({ email });
         if (isuser) {
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ success: false, message: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -20,10 +20,10 @@ async function registeruser(req, res) {
         const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
 
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ success: true, message: "User registered successfully" });
 
     }catch(err){
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 
 
@@ -44,7 +44,10 @@ async function loginuser(req, res) {
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
     res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
-    res.status(200).json({ message: "Login successful",
+    res.status(200).json({ 
+        success: true,
+        message: "Login successful",
+        token: token,
         user:{
             id: user._id,
             username: user.username,

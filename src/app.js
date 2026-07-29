@@ -1,3 +1,6 @@
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -10,6 +13,7 @@ const approachCardRouter = require('./router/HomeRouters/approachCard.routes');
 const contactCTARouter = require('./router/HomeRouters/contactsCTA.routes');
 const contactEnquiryRouter = require('./router/HomeRouters/contactEnquiry.routes');
 const aboutRouter = require('./router/AboutRouters/about.routes');
+const testimonialRouter = require('./router/AboutRouters/testimonialRouter');
 const howWeWorkRouter = require('./router/HomeRouters/howWeWork.routes');
 const locationCardRouter = require('./router/HomeRouters/locationCard.router');
 //const whyChooseRouter = require('./router/AboutRouters/whyChoose.routes');
@@ -19,6 +23,7 @@ const workforceSolutionRouter = require('./router/WorkforceSolution/workforceSol
 const seoRouter = require('./router/SEO/seo.routes');
 const employeeHeroRouter = require('./router/EmployeeRoutes/EmployeeHero.router');
 const employeeTestimonialRouter = require('./router/EmployeeRoutes/employeeTestimonial.routes');
+const trustedByRouter = require('./router/HomeRouters/trustedBy.routes');
 
 const app = express();
 
@@ -44,6 +49,7 @@ app.use('/api', approachCardRouter);
 app.use('/api', contactCTARouter);
 app.use('/api', contactEnquiryRouter);
 app.use('/api', aboutRouter);
+app.use('/api', testimonialRouter);
 app.use('/api', employerCardRouter);
 app.use('/api', employerRouter);
 app.use('/api', howWeWorkRouter);
@@ -54,6 +60,7 @@ app.use('/api', workforceSolutionRouter);
 app.use('/api', seoRouter);
 app.use('/api', employeeHeroRouter);
 app.use('/api', employeeTestimonialRouter);
+app.use('/api', trustedByRouter);
 // Multer file size error handler (for image uploads > 5MB)
 app.use((err, req, res, next) => {
   if (err && err.code === 'LIMIT_FILE_SIZE') {
