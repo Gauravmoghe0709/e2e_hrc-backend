@@ -10,6 +10,10 @@ exports.createStep = async (req, res) => {
       order,
       isActive
     });
+    const totalSteps = await HowWeWorkStep.countDocuments();
+    if (totalSteps > 6) {
+      return res.status(400).json({ success: false, message: "Only 6 steps are allowed" });
+    }
 
     res.status(201).json({ success: true, data: newStep });
   } catch (error) {

@@ -21,5 +21,5 @@ const testimonialSectionSchema = new mongoose.Schema(
 );
 
 module.exports =
-  mongoose.models.TestimonialSection ||
-  mongoose.model("TestimonialSection", testimonialSectionSchema);
+  mongoose.models.workforcesolutionTestimonialSection ||
+  mongoose.model("workforcesolutionTestimonialSection", testimonialSectionSchema);

@@ -75,19 +75,19 @@ router.delete("/admin/workforce-solutions/cta/:id",protectedRoute, workforceSolu
 
 
 // ─── Public API ───────────────────────────────────────────────────────────
-router.get("/testimonials", testimonialController.getPublicTestimonials);
+router.get("/workforce-solutions/testimonials", testimonialController.getPublicTestimonials);
 
 // ─── Admin Section APIs ───────────────────────────────────────────────────
 
-router.post("/admin/testimonial-section",protectedRoute, testimonialController.createTestimonialSection);
-router.get("/admin/testimonial-section",protectedRoute, testimonialController.getAdminTestimonialSections);
-router.put("/admin/testimonial-section/:id",protectedRoute, testimonialController.updateTestimonialSection);
-router.delete("/admin/testimonial-section/:id",protectedRoute, testimonialController.deleteTestimonialSection);
+router.post("/admin/workforce-solutions/testimonial-section",protectedRoute, testimonialController.createTestimonialSection);
+router.get("/admin/workforce-solutions/testimonial-section",protectedRoute, testimonialController.getAdminTestimonialSections);
+router.put("/admin/workforce-solutions/testimonial-section/:id",protectedRoute, testimonialController.updateTestimonialSection);
+router.delete("/admin/workforce-solutions/testimonial-section/:id",protectedRoute, testimonialController.deleteTestimonialSection);
 //Cards
-router.post("/admin/testimonial-cards", protectedRoute,testimonialController.createTestimonialCard);
-router.get("/admin/testimonial-cards", protectedRoute,testimonialController.getAdminTestimonialCards);
-router.put("/admin/testimonial-cards/:id", protectedRoute,testimonialController.updateTestimonialCard);
-router.delete("/admin/testimonial-cards/:id", protectedRoute,testimonialController.deleteTestimonialCard);
+router.post("/admin/workforce-solutions/testimonial-cards", protectedRoute,testimonialController.createTestimonialCard);
+router.get("/admin/workforce-solutions/testimonial-cards", protectedRoute,testimonialController.getAdminTestimonialCards);
+router.put("/admin/workforce-solutions/testimonial-cards/:id", protectedRoute,testimonialController.updateTestimonialCard);
+router.delete("/admin/workforce-solutions/testimonial-cards/:id", protectedRoute,testimonialController.deleteTestimonialCard);
 
 module.exports = router;
 

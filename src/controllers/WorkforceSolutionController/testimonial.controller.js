@@ -14,13 +14,6 @@ exports.getPublicTestimonials = async (req, res) => {
     // Get active section
     const section = await TestimonialSection.findOne({ isActive: true }).lean();
     
-    if (!section) {
-      return res.status(404).json({
-        success: false,
-        message: "Active testimonial section not found"
-      });
-    }
-
     // Get active cards, sorted by order
     const cards = await TestimonialCard.find({ isActive: true })
       .sort({ order: 1 })
@@ -29,11 +22,11 @@ exports.getPublicTestimonials = async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        section: {
+        section: section ? {
           badgeText: section.badgeText,
           sectionTitle: section.sectionTitle,
           isActive: section.isActive
-        },
+        } : null,
         cards
       }
     });
