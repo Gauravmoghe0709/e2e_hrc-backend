@@ -24,6 +24,7 @@ const seoRouter = require('./router/SEO/seo.routes');
 const employeeHeroRouter = require('./router/EmployeeRoutes/EmployeeHero.router');
 const employeeTestimonialRouter = require('./router/EmployeeRoutes/employeeTestimonial.routes');
 const trustedByRouter = require('./router/HomeRouters/trustedBy.routes');
+const becomePartnerRouter = require('./router/becomePartner/becomePartnerRoutes');
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use('/api', seoRouter);
 app.use('/api', employeeHeroRouter);
 app.use('/api', employeeTestimonialRouter);
 app.use('/api', trustedByRouter);
+app.use('/api', becomePartnerRouter);
 // Multer file size error handler (for image uploads > 5MB)
 app.use((err, req, res, next) => {
   if (err && err.code === 'LIMIT_FILE_SIZE') {
