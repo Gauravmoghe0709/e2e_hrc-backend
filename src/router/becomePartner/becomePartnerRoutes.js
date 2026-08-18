@@ -10,6 +10,15 @@ const {
     updatePartnershipEnquiry,
     deletePartnershipEnquiry,
 } = require('../../controllers/becomePartner/partnershipEnquiryController');
+const {
+  getAllLocations,
+  getLocationById,
+  getActiveLocations,
+  createLocation,
+  updateLocation,
+  deleteLocation,
+} = require('../../controllers/becomePartner/locationcontroller');
+
 const upload = require('../../middleware/upload.middleware');
 const protectedRoute = require('../../middleware/auth.middleware');
 
@@ -49,5 +58,15 @@ router.get('/admin/partnership-enquiries', protectedRoute, getAllPartnershipEnqu
 router.get('/admin/partnership-enquiries/:id', protectedRoute, getPartnershipEnquiryById);
 router.put('/admin/partnership-enquiries/:id', protectedRoute, updatePartnershipEnquiry);
 router.delete('/admin/partnership-enquiries/:id', protectedRoute, deletePartnershipEnquiry);
+
+// ─── Admin Location APIs ────────────────────────────────────────────────────────────────
+router.get('/admin/locations', protectedRoute, getAllLocations);
+router.get('/admin/locations/:id', protectedRoute, getLocationById);
+router.post('/admin/locations', protectedRoute, createLocation);
+router.put('/admin/locations/:id', protectedRoute, updateLocation);
+router.delete('/admin/locations/:id', protectedRoute, deleteLocation);
+
+ // Public API to get active locations
+router.get('/locations/active', getActiveLocations);
 
 module.exports = router;
