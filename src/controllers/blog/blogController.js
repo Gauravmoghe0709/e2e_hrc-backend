@@ -506,11 +506,16 @@ const getActiveBlogs = async (req, res) => {
 const getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
+    // First, check if ANY blog with this slug exists (regardless of status)
+    const anyBlog = await Blog.findOne({ slug: slug.toLowerCase() });
+    console.log('Blog with any status:', anyBlog ? { slug: anyBlog.slug, isActive: anyBlog.isActive } : 'None found');
 
+    // Then search for active blog
     const blog = await Blog.findOne({
       slug: slug.toLowerCase(),
       isActive: true,
     });
+
 
     if (!blog) {
       return res.status(404).json({

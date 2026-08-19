@@ -24,6 +24,13 @@ const {
   getActiveBlogs,
   getBlogBySlug,
 } = require('../../controllers/blog/blogController');
+const {
+  getAllBlogCtas,
+  createBlogCta,
+  updateBlogCta,
+  deleteBlogCta,
+  getActiveBlogCta,
+} = require('../../controllers/blog/blogCtacontroller');
 const upload = require('../../middleware/upload.middleware');
 const protectedRoute = require('../../middleware/auth.middleware');
 
@@ -62,5 +69,15 @@ router.patch('/admin/blogs/:id/status', protectedRoute, updateBlogStatus);
 // Public APIs (place dynamic routes last to avoid conflicts)
 router.get('/blogs', getActiveBlogs);
 router.get('/blogs/:slug', getBlogBySlug);
+
+
+//------- BlogCTA Routes---------------------
+router.get('/admin/blog-cta', protectedRoute, getAllBlogCtas);
+router.post('/admin/blog-cta', protectedRoute, createBlogCta);
+router.put('/admin/blog-cta/:id', protectedRoute, updateBlogCta);
+router.delete('/admin/blog-cta/:id', protectedRoute, deleteBlogCta);
+
+// public Api
+router.get('/blog-cta/active', getActiveBlogCta);
 
 module.exports = router;
