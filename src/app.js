@@ -11,7 +11,6 @@ const serviceRouter = require('./router/HomeRouters/service.routes');
 const employerCardRouter = require('./router/HomeRouters/employeeCard.router');
 const approachCardRouter = require('./router/HomeRouters/approachCard.routes');
 const contactCTARouter = require('./router/HomeRouters/contactsCTA.routes');
-const contactEnquiryRouter = require('./router/HomeRouters/contactEnquiry.routes');
 const aboutRouter = require('./router/AboutRouters/about.routes');
 const testimonialRouter = require('./router/AboutRouters/testimonialRouter');
 const howWeWorkRouter = require('./router/HomeRouters/howWeWork.routes');
@@ -26,6 +25,11 @@ const employeeTestimonialRouter = require('./router/EmployeeRoutes/employeeTesti
 const trustedByRouter = require('./router/HomeRouters/trustedBy.routes');
 const becomePartnerRouter = require('./router/becomePartner/becomePartnerRoutes');
 const blogRouter = require('./router/blog/blogroutes');
+const contactUsRouter = require('./router/contactUs/contactUsRoutes');
+const contactUsEnquiryRouter = require('./router/contactUs/contactUsEnquiryRoutes');
+const headOfficeRouter = require('./router/contactUs/headOfficeRoutes');
+const contactCardRouter = require('./router/contactUs/contactCardRoutes');
+
 
 const app = express();
 
@@ -49,7 +53,6 @@ app.use('/api', heroRouter);
 app.use('/api', serviceRouter);
 app.use('/api', approachCardRouter);
 app.use('/api', contactCTARouter);
-app.use('/api', contactEnquiryRouter);
 app.use('/api', aboutRouter);
 app.use('/api', testimonialRouter);
 app.use('/api', employerCardRouter);
@@ -65,6 +68,10 @@ app.use('/api', employeeTestimonialRouter);
 app.use('/api', trustedByRouter);
 app.use('/api', becomePartnerRouter);
 app.use('/api', blogRouter);
+app.use('/api', contactUsRouter);
+app.use('/api/contact', contactUsEnquiryRouter);
+app.use('/api', headOfficeRouter);
+app.use('/api', contactCardRouter);
 // Multer file size error handler (for image uploads > 5MB)
 app.use((err, req, res, next) => {
   if (err && err.code === 'LIMIT_FILE_SIZE') {

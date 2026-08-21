@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const contactEnquiryController = require('../../controllers/HomeControllers/contactEnquiry.controller');
+const contactEnquiryController = require('../../controllers/HomeControllers/HomecontactEnquiry.controller');
 const protectedRoute = require('../../middleware/auth.middleware');
 const upload = require('../../middleware/upload.middleware');
 

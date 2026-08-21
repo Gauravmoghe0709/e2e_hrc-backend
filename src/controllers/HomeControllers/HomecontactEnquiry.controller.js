@@ -1,4 +1,4 @@
-const ContactEnquiry = require("../../model/Home models/ContactEnquiry.model");
+const ContactEnquiry = require("../../model/Home models/HomepageContactEnquiry.model");
 const uploadFile = require("../../services/storage.services");
 
 // POST /api/contact-enquiries

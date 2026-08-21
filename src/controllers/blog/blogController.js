@@ -176,12 +176,30 @@ const createBlog = async (req, res) => {
 // ─── GET All Blogs (Admin) ────────────────────────────────────────────────────
 const getAllBlogs = async (req, res) => {
   try {
+    const now = new Date();
     const blogs = await Blog.find().sort({ publishDate: -1 }).lean();
+
+    // Add computed status field to each blog
+    // Status logic:
+    // - "Scheduled" if publishDate > now AND isActive: true
+    // - "Published" if publishDate <= now AND isActive: true
+    // - "Draft" if isActive: false
+    const blogsWithStatus = blogs.map((blog) => {
+      let status = 'Draft';
+      if (blog.isActive) {
+        status = blog.publishDate > now ? 'Scheduled' : 'Published';
+      }
+      return {
+        ...blog,
+        status,
+      };
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Blogs fetched successfully.',
-      data: blogs,
-      count: blogs.length,
+      data: blogsWithStatus,
+      count: blogsWithStatus.length,
     });
   } catch (error) {
     console.error('Error fetching blogs:', error);
@@ -484,9 +502,19 @@ const updateBlogStatus = async (req, res) => {
 };
 
 // ─── GET Active Blogs (Public) ────────────────────────────────────────────────
+// Returns only blogs that are:
+// 1. isActive: true
+// 2. publishDate <= current time (automatically published or scheduled past date)
+// Sorts by publishDate descending (newest first), then by createdAt descending for same-date blogs
 const getActiveBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({ isActive: true }).sort({ publishDate: -1 }).lean();
+    const now = new Date();
+    const blogs = await Blog.find({
+      isActive: true,
+      publishDate: { $lte: now },
+    })
+      .sort({ publishDate: -1, createdAt: -1 })
+      .lean();
     return res.status(200).json({
       success: true,
       message: 'Active blogs fetched successfully.',
@@ -503,19 +531,24 @@ const getActiveBlogs = async (req, res) => {
 };
 
 // ─── GET Blog by Slug (Public) ────────────────────────────────────────────────
+// Returns blog only if:
+// 1. slug matches
+// 2. isActive: true
+// 3. publishDate <= current time (scheduled blogs not yet published will return 404)
 const getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    // First, check if ANY blog with this slug exists (regardless of status)
-    const anyBlog = await Blog.findOne({ slug: slug.toLowerCase() });
-    console.log('Blog with any status:', anyBlog ? { slug: anyBlog.slug, isActive: anyBlog.isActive } : 'None found');
+    const now = new Date();
 
-    // Then search for active blog
+    // First, check if ANY blog with this slug exists (regardless of status/date) - for debugging
+    const anyBlog = await Blog.findOne({ slug: slug.toLowerCase() });
+    
+    // Search for blog that is publicly eligible (active AND published)
     const blog = await Blog.findOne({
       slug: slug.toLowerCase(),
       isActive: true,
+      publishDate: { $lte: now },
     });
-
 
     if (!blog) {
       return res.status(404).json({
