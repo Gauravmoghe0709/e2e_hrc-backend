@@ -7,7 +7,19 @@ const heroSchema = new mongoose.Schema({
     buttonText: { type: String },
     buttonLink: { type: String },
     heroImage: { type: String },
+    stats: {
+        type: [{
+            label: { type: String, required: true, trim: true },
+            value: { type: String, required: true, trim: true },
+        }],
+        validate: {
+            validator: (stats) => stats.length <= 4,
+            message: "Hero can have a maximum of 4 stats",
+        },
+        default: [],
+    },
     isActive: { type: Boolean, default: true }
+
 }, {
     timestamps: true
 });

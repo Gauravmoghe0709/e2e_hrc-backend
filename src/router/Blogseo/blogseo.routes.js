@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const seoController = require('../../controllers/SEO/seo.controller');
+const seoController = require('../../controllers/blogseo/blogseo.controller');
 const upload = require('../../middleware/upload.middleware');
 const protectedRoute = require ("../../middleware/auth.middleware")
 // Public API

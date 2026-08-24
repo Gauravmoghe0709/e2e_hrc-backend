@@ -19,7 +19,7 @@ const locationCardRouter = require('./router/HomeRouters/locationCard.router');
 const employerRouter = require('./router/EmployerRoutes/Employer.routes');
 const footerRouter = require('./router/footer.routes');
 const workforceSolutionRouter = require('./router/WorkforceSolution/workforceSolution.routes');
-const seoRouter = require('./router/SEO/seo.routes');
+const seoRouter = require('./router/Seo/seoStaticPage.routes');
 const employeeHeroRouter = require('./router/EmployeeRoutes/EmployeeHero.router');
 const employeeTestimonialRouter = require('./router/EmployeeRoutes/employeeTestimonial.routes');
 const trustedByRouter = require('./router/HomeRouters/trustedBy.routes');
@@ -29,6 +29,8 @@ const contactUsRouter = require('./router/contactUs/contactUsRoutes');
 const contactUsEnquiryRouter = require('./router/contactUs/contactUsEnquiryRoutes');
 const headOfficeRouter = require('./router/contactUs/headOfficeRoutes');
 const contactCardRouter = require('./router/contactUs/contactCardRoutes');
+const homeemployeerouter = require("./router/HomeRouters/EmployeeRouter")
+const homeemployerrouter = require("./router/HomeRouters/EmployerRouter")
 
 
 const app = express();
@@ -59,6 +61,8 @@ app.use('/api', employerCardRouter);
 app.use('/api', employerRouter);
 app.use('/api', howWeWorkRouter);
 app.use('/api', locationCardRouter);
+app.use("/api",homeemployeerouter)
+app.use("/api",homeemployerrouter)
 //app.use('/api', whyChooseRouter);
 app.use('/api', footerRouter);
 app.use('/api', workforceSolutionRouter);

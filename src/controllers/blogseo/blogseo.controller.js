@@ -1,4 +1,4 @@
-const SEO = require('../../model/SEO/seo.model');
+const SEO = require('../../model/Blogseo/blogseo.model');
 const uploadImage = require('../../services/storage.services');
 
 // Public API

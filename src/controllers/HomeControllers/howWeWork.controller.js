@@ -183,7 +183,6 @@ const createHowWeWork = async (req, res) => {
     const { sectionTitle, sectionDescription, employerSteps, employeeSteps, isActive } = req.body;
     const parsedSteps = parseIncomingSteps(req.body.steps);
 
-    console.log("Backend Steps:", parsedSteps);
 
     if (req.body.steps !== undefined && !Array.isArray(parsedSteps)) {
       return res.status(400).json({ success: false, message: "Steps must be provided as an array" });

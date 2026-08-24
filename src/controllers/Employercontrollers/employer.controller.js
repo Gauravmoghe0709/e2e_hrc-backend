@@ -151,6 +151,12 @@ async function deleteEmployerHero(req, res) {
 
 async function createEmployerHowWeWorkStep(req, res) {
     try {
+        const cardcount = await HowWeWork.countDocuments()
+        if(cardcount>=6){
+            return res.status(400).json({
+                message:"maximum 6 cards are allowed"
+            })
+        }
         const { title, description, order, isActive } = req.body;
         if (!title || !description) {
             return res.status(400).json({ success: false, message: "Title and description are required." });
@@ -219,6 +225,12 @@ async function deleteEmployerHowWeWorkStep(req, res) {
 
 async function createEmployerFAQ(req, res) {
     try {
+        const maxfaqs = await EmployerFAQ.countDocuments()
+            if(maxfaqs>=6){
+                return res.status(400).json({
+                    message: "Only 6 Faqs are alloweds.."
+                })
+            }
         const { question, answer, order, isActive } = req.body;
 
         if (!question || !question.toString().trim()) {

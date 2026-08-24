@@ -720,6 +720,15 @@ async function deleteWhyChooseE2ESection(req, res) {
 
 async function createWhyChooseE2ECard(req, res) {
     try {
+             // Maximum 5 cards allowed
+        const cardCount = await WhyChooseE2ECard.countDocuments();
+
+        if (cardCount >= 5) {
+            return res.status(400).json({
+                success: false,
+                message: 'Maximum 5 Why Choose E2E cards are allowed.',
+            });
+        }
         const { title, description, displayOrder, isActive } = req.body;
 
         if (!title || !title.toString().trim()) {
