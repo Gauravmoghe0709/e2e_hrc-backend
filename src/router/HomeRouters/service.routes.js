@@ -8,7 +8,6 @@ router.get("/services", serviceController.getActiveServices);
 
 // Admin — GET all services (including inactive) for admin management
 router.get("/admin/services", serviceController.getAllServicesAdmin);
-
 router.post("/admin/services",protectedRoute, upload.single("image"), serviceController.createService);
 router.put("/admin/services/:id",protectedRoute, serviceController.updateService);
 router.delete("/admin/services/:id",protectedRoute, serviceController.deleteService);

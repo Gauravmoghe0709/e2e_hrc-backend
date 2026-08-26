@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const heroSchema = new mongoose.Schema({
     title: { type: String, required: true },
+    highlightedText: { type: String, default: "" },
     subtitle: { type: String },
     description: { type: String },
     buttonText: { type: String },

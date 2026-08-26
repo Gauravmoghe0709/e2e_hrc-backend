@@ -27,6 +27,7 @@ const createOrUpdateHero = async (req, res) => {
   try {
     const {
       title,
+      highlightedText,
       subtitle,
       description,
       buttonText,
@@ -41,6 +42,7 @@ const createOrUpdateHero = async (req, res) => {
     if (hero) {
       // Update existing
       hero.title = title || hero.title;
+      hero.highlightedText = highlightedText !== undefined ? highlightedText : hero.highlightedText;
       hero.subtitle = subtitle !== undefined ? subtitle : hero.subtitle;
       hero.description = description !== undefined ? description : hero.description;
       hero.buttonText = buttonText !== undefined ? buttonText : hero.buttonText;
@@ -59,6 +61,7 @@ const createOrUpdateHero = async (req, res) => {
       // Create new
       hero = new Hero({
         title,
+        highlightedText: highlightedText || "",
         subtitle,
         description,
         buttonText,

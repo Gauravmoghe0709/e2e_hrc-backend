@@ -11,7 +11,6 @@ const employeerSchema = new mongoose.Schema({
   },
     highlightedText: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
