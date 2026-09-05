@@ -12,6 +12,10 @@ const howWeWorkStepSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+    },
     order: {
       type: Number,
       default: 0,

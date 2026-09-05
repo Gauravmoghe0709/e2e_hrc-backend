@@ -17,6 +17,10 @@ const becomePartnerSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+    },
     backgroundImage: {
       type: String,
       required: true,

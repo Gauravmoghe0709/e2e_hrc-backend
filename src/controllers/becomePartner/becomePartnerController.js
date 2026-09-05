@@ -49,7 +49,7 @@ const getActiveRecruitmentPartner = async (req, res) => {
 // ─── POST (Admin) ─────────────────────────────────────────────────────────────
 const createRecruitmentPartner = async (req, res) => {
     try {
-        const { title, highlightText, subtitle, isActive } = req.body;
+        const { title, highlightText, subtitle, description, isActive } = req.body;
 
         if (!title || !highlightText || !subtitle) {
             return res.status(400).json({
@@ -71,6 +71,7 @@ const createRecruitmentPartner = async (req, res) => {
             title: title.trim(),
             highlightText: highlightText.trim(),
             subtitle: subtitle.trim(),
+            description: description ? description.trim() : '',
             backgroundImage: uploadedFile.url,
             isActive: isActive !== undefined ? normalizeBoolean(isActive) : true,
         });
@@ -96,11 +97,12 @@ const updateRecruitmentPartner = async (req, res) => {
         }
 
         const updateData = {};
-        const { title, highlightText, subtitle, isActive } = req.body;
+        const { title, highlightText, subtitle, description, isActive } = req.body;
 
         if (title !== undefined) updateData.title = title.trim();
         if (highlightText !== undefined) updateData.highlightText = highlightText.trim();
         if (subtitle !== undefined) updateData.subtitle = subtitle.trim();
+        if (description !== undefined) updateData.description = description.trim();
         if (isActive !== undefined) updateData.isActive = normalizeBoolean(isActive);
 
         // Handle image replacement if a new file was uploaded

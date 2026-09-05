@@ -8,6 +8,7 @@ const heroSchema = new mongoose.Schema({
     buttonText: { type: String },
     buttonLink: { type: String },
     heroImage: { type: String },
+    /*heroImageFileId: { type: String }, */
     stats: {
         type: [{
             label: { type: String, required: true, trim: true },

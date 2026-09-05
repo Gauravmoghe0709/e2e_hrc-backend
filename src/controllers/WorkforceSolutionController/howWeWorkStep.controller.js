@@ -2,11 +2,12 @@ const HowWeWorkStep = require("../../model/WorkforceSolution/HowWeWorkStep");
 
 exports.createStep = async (req, res) => {
   try {
-    const { stepNumber, title, order, isActive } = req.body;
+    const { stepNumber, title, description, order, isActive } = req.body;
 
     const newStep = await HowWeWorkStep.create({
       stepNumber,
       title,
+      description,
       order,
       isActive
     });
@@ -35,11 +36,11 @@ exports.getAdminSteps = async (req, res) => {
 exports.updateStep = async (req, res) => {
   try {
     const { id } = req.params;
-    const { stepNumber, title, order, isActive } = req.body;
+    const { stepNumber, title, description, order, isActive } = req.body;
 
     const updatedStep = await HowWeWorkStep.findByIdAndUpdate(
       id,
-      { stepNumber, title, order, isActive },
+      { stepNumber, title, description, order, isActive },
       { new: true, runValidators: true }
     );
 

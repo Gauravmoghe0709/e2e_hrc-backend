@@ -14,7 +14,7 @@ exports.createEmployeeJourneyCard = async (req, res) => {
       });
     }
 
-    let { title, order, isActive } = req.body;
+    let { title, description, order, isActive } = req.body;
 
     if (!title || !title.trim()) {
       return res.status(400).json({
@@ -45,6 +45,7 @@ exports.createEmployeeJourneyCard = async (req, res) => {
 
     const newCard = await EmployeeJourneyCard.create({
       title,
+      description: description !== undefined ? description.trim() : "",
       order: orderNum,
       isActive: activeStatus,
     });
@@ -68,7 +69,12 @@ exports.createEmployeeJourneyCard = async (req, res) => {
 exports.getAdminEmployeeJourneyCards = async (req, res) => {
   try {
     const cards = await EmployeeJourneyCard.find().sort({ order: 1, createdAt: 1 });
-    res.status(200).json({ success: true, data: cards });
+    const mappedCards = cards.map(card => {
+      const obj = card.toObject();
+      if (obj.description === undefined) obj.description = "";
+      return obj;
+    });
+    res.status(200).json({ success: true, data: mappedCards });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
@@ -82,7 +88,7 @@ exports.updateEmployeeJourneyCard = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid Card ID" });
     }
 
-    let { title, order, isActive } = req.body;
+    let { title, description, order, isActive } = req.body;
     let updateData = {};
 
     if (title !== undefined) {
@@ -90,6 +96,10 @@ exports.updateEmployeeJourneyCard = async (req, res) => {
          return res.status(400).json({ success: false, message: "Title cannot be empty" });
       }
       updateData.title = title.trim();
+    }
+
+    if (description !== undefined) {
+      updateData.description = description.trim ? description.trim() : String(description);
     }
     
     if (order !== undefined && order !== "") {

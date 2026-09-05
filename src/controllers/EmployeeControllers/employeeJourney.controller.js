@@ -17,12 +17,17 @@ exports.getPublicEmployeeJourney = async (req, res) => {
     }
 
     const activeCards = await EmployeeJourneyCard.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
+    const mappedCards = activeCards.map(card => {
+      const obj = card.toObject();
+      if (obj.description === undefined) obj.description = "";
+      return obj;
+    });
 
     res.status(200).json({
       success: true,
       data: {
         section: activeSection,
-        cards: activeCards
+        cards: mappedCards
       }
     });
   } catch (error) {

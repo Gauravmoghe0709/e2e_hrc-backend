@@ -7,6 +7,11 @@ const employeeJourneyCardSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     order: {
       type: Number,
       default: 0,
