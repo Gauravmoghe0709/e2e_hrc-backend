@@ -1,5 +1,6 @@
 const employerheromodel = require('../../model/Employer models/employerhero.model');
 const HowWeWork = require('../../model/Employer models/HowWeWork.model');
+const EmployerHowWeWorkSection = require('../../model/Employer models/EmployerHowWeWorkSection.model');
 const EmployerFAQ = require('../../model/Employer models/EmployerFAQ.model');
 const EmployerCTA = require('../../model/Employer models/EmployerCTA.model');
 const EmployerTestimonialSection = require('../../model/Employer models/EmployerTestimonialSection.model');
@@ -148,6 +149,147 @@ async function deleteEmployerHero(req, res) {
     }
 }
 
+
+async function getEmployerHowWeWorkSection(req, res) {
+    try {
+        const section = await EmployerHowWeWorkSection.findOne({ isActive: true }).sort({ displayOrder: 1, createdAt: -1 }).lean();
+
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Active employer How We Work section not found." });
+        }
+
+        return res.status(200).json({ success: true, message: "Employer How We Work section fetched successfully.", data: section });
+    } catch (error) {
+        console.error("Error fetching employer How We Work section:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function getAllEmployerHowWeWorkSections(req, res) {
+    try {
+        const sections = await EmployerHowWeWorkSection.find().sort({ displayOrder: 1, createdAt: -1 }).lean();
+        return res.status(200).json({ success: true, message: "Employer How We Work sections fetched successfully.", data: sections });
+    } catch (error) {
+        console.error("Error fetching employer How We Work sections:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function getEmployerHowWeWorkSectionById(req, res) {
+    try {
+        const { id } = req.params;
+        const section = await EmployerHowWeWorkSection.findById(id).lean();
+
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Employer How We Work section not found." });
+        }
+
+        return res.status(200).json({ success: true, message: "Employer How We Work section fetched successfully.", data: section });
+    } catch (error) {
+        console.error("Error fetching employer How We Work section by id:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function createEmployerHowWeWorkSection(req, res) {
+    try {
+        const { sectionTitle, sectionDescription, isActive, displayOrder } = req.body;
+
+        if (!sectionTitle || !sectionTitle.toString().trim()) {
+            return res.status(400).json({ success: false, message: "Section title is required." });
+        }
+        if (!sectionDescription || !sectionDescription.toString().trim()) {
+            return res.status(400).json({ success: false, message: "Section description is required." });
+        }
+
+        const existing = await EmployerHowWeWorkSection.findOne();
+        if (existing) {
+            return res.status(409).json({ success: false, message: "An employer How We Work section already exists. Update it instead of creating a new record." });
+        }
+
+        const section = await EmployerHowWeWorkSection.create({
+            sectionTitle: sectionTitle.toString().trim(),
+            sectionDescription: sectionDescription.toString().trim(),
+            isActive: isActive !== undefined ? Boolean(isActive) : true,
+            displayOrder: displayOrder !== undefined ? Number(displayOrder) : 0,
+        });
+
+        return res.status(201).json({ success: true, message: "Employer How We Work section created successfully.", data: section });
+    } catch (error) {
+        console.error("Error creating employer How We Work section:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function updateEmployerHowWeWorkSection(req, res) {
+    try {
+        const { id } = req.params;
+        const { sectionTitle, sectionDescription, isActive, displayOrder } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: "Section ID is required." });
+        }
+
+        if (sectionTitle !== undefined && !sectionTitle.toString().trim()) {
+            return res.status(400).json({ success: false, message: "Section title is required." });
+        }
+        if (sectionDescription !== undefined && !sectionDescription.toString().trim()) {
+            return res.status(400).json({ success: false, message: "Section description is required." });
+        }
+
+        const updateData = {};
+        if (sectionTitle !== undefined) updateData.sectionTitle = sectionTitle.toString().trim();
+        if (sectionDescription !== undefined) updateData.sectionDescription = sectionDescription.toString().trim();
+        if (isActive !== undefined) updateData.isActive = Boolean(isActive);
+        if (displayOrder !== undefined) updateData.displayOrder = Number(displayOrder);
+
+        const section = await EmployerHowWeWorkSection.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Employer How We Work section not found." });
+        }
+
+        return res.status(200).json({ success: true, message: "Employer How We Work section updated successfully.", data: section });
+    } catch (error) {
+        console.error("Error updating employer How We Work section:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function deleteEmployerHowWeWorkSection(req, res) {
+    try {
+        const { id } = req.params;
+        const section = await EmployerHowWeWorkSection.findByIdAndDelete(id);
+
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Employer How We Work section not found." });
+        }
+
+        return res.status(200).json({ success: true, message: "Employer How We Work section deleted successfully.", data: null });
+    } catch (error) {
+        console.error("Error deleting employer How We Work section:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+async function toggleEmployerHowWeWorkSectionStatus(req, res) {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+
+        const section = await EmployerHowWeWorkSection.findById(id);
+        if (!section) {
+            return res.status(404).json({ success: false, message: "Employer How We Work section not found." });
+        }
+
+        section.isActive = isActive !== undefined ? Boolean(isActive) : !section.isActive;
+        await section.save();
+
+        return res.status(200).json({ success: true, message: "Employer How We Work section status updated.", data: section });
+    } catch (error) {
+        console.error("Error toggling employer How We Work section status:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
 
 async function createEmployerHowWeWorkStep(req, res) {
     try {
@@ -723,6 +865,13 @@ module.exports = {
     updateEmployerHero,
     uploadEmployerHeroImage,
     deleteEmployerHero,
+    getEmployerHowWeWorkSection,
+    getAllEmployerHowWeWorkSections,
+    getEmployerHowWeWorkSectionById,
+    createEmployerHowWeWorkSection,
+    updateEmployerHowWeWorkSection,
+    deleteEmployerHowWeWorkSection,
+    toggleEmployerHowWeWorkSectionStatus,
     createEmployerHowWeWorkStep,
     getAdminHowWeWorkSteps,
     getEmployerHowWeWorkSteps,

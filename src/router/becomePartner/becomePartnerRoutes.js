@@ -18,6 +18,13 @@ const {
   updateLocation,
   deleteLocation,
 } = require('../../controllers/becomePartner/locationcontroller');
+const {
+  getPartnerProfiles,
+  getActivePartnerProfile,
+  createPartnerProfile,
+  updatePartnerProfile,
+  deletePartnerProfile,
+} = require('../../controllers/becomePartner/partnerProfile.controller');
 
 const upload = require('../../middleware/upload.middleware');
 const protectedRoute = require('../../middleware/auth.middleware');
@@ -66,7 +73,16 @@ router.post('/admin/locations', protectedRoute, createLocation);
 router.put('/admin/locations/:id', protectedRoute, updateLocation);
 router.delete('/admin/locations/:id', protectedRoute, deleteLocation);
 
- // Public API to get active locations
+// Public API to get active locations
 router.get('/locations/active', getActiveLocations);
+
+// ─── Partner Profile Public API ────────────────────────────────────────────────────────
+router.get('/become-partner/partner-profile', getActivePartnerProfile);
+
+// ─── Partner Profile Admin APIs ─────────────────────────────────────────────────────────
+router.get('/admin/become-partner/partner-profile', protectedRoute, getPartnerProfiles);
+router.post('/admin/become-partner/partner-profile', protectedRoute, createPartnerProfile);
+router.put('/admin/become-partner/partner-profile/:id', protectedRoute, updatePartnerProfile);
+router.delete('/admin/become-partner/partner-profile/:id', protectedRoute, deletePartnerProfile);
 
 module.exports = router;

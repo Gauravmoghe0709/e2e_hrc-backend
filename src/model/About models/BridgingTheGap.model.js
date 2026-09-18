@@ -7,6 +7,8 @@ const bridgingTheGapSchema = new mongoose.Schema(
         feature1: { type: String, default: "" },
         feature2: { type: String, default: "" },
         feature3: { type: String, default: "" },
+        locationLabel: { type: String, trim: true, default: "" },
+        locationValue: { type: String, trim: true, default: "" },
         image: { type: String, default: "" },
         isActive: { type: Boolean, default: true },
     },

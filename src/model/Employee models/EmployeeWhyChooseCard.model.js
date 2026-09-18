@@ -42,6 +42,26 @@ const employeeWhyChooseCardSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    stat3Value: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    stat3Label: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    stat4Value: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    stat4Label: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     order: {
       type: Number,
       default: 0,

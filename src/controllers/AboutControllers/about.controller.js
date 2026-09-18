@@ -352,7 +352,7 @@ async function deleteAboutInfo(req, res) {
 
 async function createBridgingTheGap(req, res) {
   try {
-    const { heading, description, feature1, feature2, feature3, isActive } = req.body;
+    const { heading, description, feature1, feature2, feature3, locationLabel, locationValue, isActive } = req.body;
 
     if (!heading || !heading.toString().trim()) {
       return res.status(400).json({
@@ -388,6 +388,8 @@ async function createBridgingTheGap(req, res) {
       feature1: feature1 || "",
       feature2: feature2 || "",
       feature3: feature3 || "",
+      locationLabel: locationLabel || "",
+      locationValue: locationValue || "",
       image: imageUrl,
       isActive: activeValue
     });
@@ -418,8 +420,8 @@ async function getBridgingTheGap(req, res) {
 
 async function updateBridgingTheGap(req, res) {
     try {
-        const { heading, description, feature1, feature2, feature3, isActive } = req.body;
-        const updateData = { heading, description, feature1, feature2, feature3, isActive };
+        const { heading, description, feature1, feature2, feature3, locationLabel, locationValue, isActive } = req.body;
+        const updateData = { heading, description, feature1, feature2, feature3, locationLabel, locationValue, isActive };
         Object.keys(updateData).forEach(k => updateData[k] === undefined && delete updateData[k]);
 
         if (updateData.isActive !== false) {

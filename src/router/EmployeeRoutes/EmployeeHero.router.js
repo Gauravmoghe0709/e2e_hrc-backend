@@ -6,6 +6,7 @@ const employeeJourneyCardController = require("../../controllers/EmployeeControl
 const employeeJourneyController = require("../../controllers/EmployeeControllers/employeeJourney.controller");
 const employeeWhyChooseController = require("../../controllers/EmployeeControllers/employeeWhyChoose.controller");
 const employeeFaqController = require ("../../controllers/EmployeeControllers/EmployeeFAQ.controller")
+const trustedByController = require("../../controllers/EmployeeControllers/trustedBy.controller");
 const protectedRoute = require("../../middleware/auth.middleware");
 const upload = require("../../middleware/upload.middleware");
 
@@ -98,5 +99,12 @@ router.get("/admin/employee/cta",protectedRoute, employeeFaqController.getAdmine
 router.put("/admin/employee/cta/:id",protectedRoute, employeeFaqController.updateemployeeCTA);
 router.delete("/admin/employee/cta/:id",protectedRoute, employeeFaqController.deleteemployeeCTA);
 
+// Employee Trusted By / Accreditations
+router.get('/employee/trusted-by', trustedByController.getPublicTrustedBy);
+router.get('/admin/employee/trusted-by', protectedRoute, trustedByController.getTrustedBy);
+router.post('/admin/employee/trusted-by', protectedRoute, trustedByController.createOrUpdateTrustedBy);
+router.post('/admin/employee/trusted-by/logo', protectedRoute, upload.single('image'), trustedByController.uploadTrustedByLogo);
+router.put('/admin/employee/trusted-by/logo/:logoId', protectedRoute, trustedByController.updateTrustedByLogo);
+router.delete('/admin/employee/trusted-by/logo/:logoId', protectedRoute, trustedByController.deleteTrustedByLogo);
 
 module.exports = router;

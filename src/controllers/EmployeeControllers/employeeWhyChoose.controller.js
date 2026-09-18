@@ -133,7 +133,7 @@ exports.updateEmployeeWhyChooseSection = async (req, res) => {
     }
 
     const updatedSection = await EmployeeWhyChooseSection.findByIdAndUpdate(id, updateData, {
-      returnDocument: "after",
+      new: true,
     });
 
     if (!updatedSection) {
@@ -180,7 +180,7 @@ exports.deleteEmployeeWhyChooseSection = async (req, res) => {
 // POST /api/admin/employee-why-choose-cards
 exports.createEmployeeWhyChooseCard = async (req, res) => {
   try {
-    let { eyebrowText, title, description, stat1Value, stat1Label, stat2Value, stat2Label, order, isActive } = req.body;
+    let { eyebrowText, title, description, stat1Value, stat1Label, stat2Value, stat2Label, stat3Value, stat3Label, stat4Value, stat4Label, order, isActive } = req.body;
 
     if (!title || !title.trim()) {
       return res.status(400).json({ success: false, message: "Card title is required" });
@@ -202,6 +202,10 @@ exports.createEmployeeWhyChooseCard = async (req, res) => {
     stat1Label = stat1Label ? stat1Label.trim() : "";
     stat2Value = stat2Value ? stat2Value.trim() : "";
     stat2Label = stat2Label ? stat2Label.trim() : "";
+    stat3Value = stat3Value ? stat3Value.trim() : "";
+    stat3Label = stat3Label ? stat3Label.trim() : "";
+    stat4Value = stat4Value ? stat4Value.trim() : "";
+    stat4Label = stat4Label ? stat4Label.trim() : "";
     const activeStatus = parseBoolean(isActive, true);
 
     let imageUrl = "";
@@ -219,6 +223,10 @@ exports.createEmployeeWhyChooseCard = async (req, res) => {
       stat1Label,
       stat2Value,
       stat2Label,
+      stat3Value,
+      stat3Label,
+      stat4Value,
+      stat4Label,
       order: parsedOrder,
       isActive: activeStatus,
     });
@@ -254,7 +262,7 @@ exports.updateEmployeeWhyChooseCard = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid card ID" });
     }
 
-    let { eyebrowText, title, description, stat1Value, stat1Label, stat2Value, stat2Label, order, isActive } = req.body;
+    let { eyebrowText, title, description, stat1Value, stat1Label, stat2Value, stat2Label, stat3Value, stat3Label, stat4Value, stat4Label, order, isActive } = req.body;
     let updateData = {};
 
     const card = await EmployeeWhyChooseCard.findById(id);
@@ -296,6 +304,22 @@ exports.updateEmployeeWhyChooseCard = async (req, res) => {
       updateData.stat2Label = stat2Label.trim();
     }
 
+    if (stat3Value !== undefined) {
+      updateData.stat3Value = stat3Value.trim();
+    }
+
+    if (stat3Label !== undefined) {
+      updateData.stat3Label = stat3Label.trim();
+    }
+
+    if (stat4Value !== undefined) {
+      updateData.stat4Value = stat4Value.trim();
+    }
+
+    if (stat4Label !== undefined) {
+      updateData.stat4Label = stat4Label.trim();
+    }
+
     if (order !== undefined && order !== "") {
       const parsedOrder = parseOrder(order);
       if (parsedOrder === null) {
@@ -313,7 +337,7 @@ exports.updateEmployeeWhyChooseCard = async (req, res) => {
       updateData.image = uploadResponse?.url || uploadResponse?.filePath || card.image;
     }
 
-    const updatedCard = await EmployeeWhyChooseCard.findByIdAndUpdate(id, updateData, { returnDocument: "after" });
+    const updatedCard = await EmployeeWhyChooseCard.findByIdAndUpdate(id, updateData, { new: true });
 
     res.status(200).json({
       success: true,
@@ -347,7 +371,7 @@ exports.updateEmployeeWhyChooseCardImage = async (req, res) => {
     const uploadResponse = await uploadImage(req.file.buffer, req.file.originalname, "employee-why-choose");
     const imageUrl = uploadResponse?.url || uploadResponse?.filePath || "";
 
-    const updatedCard = await EmployeeWhyChooseCard.findByIdAndUpdate(id, { image: imageUrl }, { returnDocument: "after" });
+    const updatedCard = await EmployeeWhyChooseCard.findByIdAndUpdate(id, { image: imageUrl }, { new: true });
 
     res.status(200).json({
       success: true,

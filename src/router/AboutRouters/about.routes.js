@@ -5,6 +5,7 @@ const protectedRoute = require("../../middleware/auth.middleware");
 const aboutController = require("../../controllers/AboutControllers/about.controller");
 const missionVisionController = require("../../controllers/AboutControllers/missionVision.controller");
 const journeyController = require("../../controllers/AboutControllers/journey.controller");
+const peopleBehindMagicController = require("../../controllers/AboutControllers/peopleBehindMagic.controller");
 const upload = multer({ storage: multer.memoryStorage() });
 
 // public route to get the About Hero section
@@ -79,6 +80,12 @@ router.get("/admin/about/mission-vision/:id", protectedRoute, missionVisionContr
 router.post("/admin/about/mission-vision", protectedRoute, missionVisionController.createMissionVision);
 router.put("/admin/about/mission-vision/:id", protectedRoute, missionVisionController.updateMissionVision);
 router.delete("/admin/about/mission-vision/:id", protectedRoute, missionVisionController.deleteMissionVision);
+
+// The People Behind the Magic section
+router.get("/people-behind-magic", peopleBehindMagicController.getPeopleBehindMagicPublic);
+router.post("/admin/people-behind-magic", protectedRoute, peopleBehindMagicController.createPeopleBehindMagic);
+router.get("/admin/people-behind-magic", protectedRoute, peopleBehindMagicController.getPeopleBehindMagicAdmin);
+router.put("/admin/people-behind-magic/:id", protectedRoute, peopleBehindMagicController.updatePeopleBehindMagic);
 
 // ── Journey Section ──────────────────────────────────────────────────────────
 // Public

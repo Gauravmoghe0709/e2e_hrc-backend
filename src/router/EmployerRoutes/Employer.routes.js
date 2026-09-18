@@ -22,6 +22,15 @@ router.post("/admin/employers/hero/:id/image", protectedRoute, upload.single("he
 // Public route
 router.get("/employer-how-we-work-steps", EmployerController.getEmployerHowWeWorkSteps);
 
+// Employer How We Work section intro routes
+router.get("/employer/how-we-work", EmployerController.getEmployerHowWeWorkSection);
+router.get("/admin/employer/how-we-work", protectedRoute, EmployerController.getAllEmployerHowWeWorkSections);
+router.get("/admin/employer/how-we-work/:id", protectedRoute, EmployerController.getEmployerHowWeWorkSectionById);
+router.post("/admin/employer/how-we-work", protectedRoute, EmployerController.createEmployerHowWeWorkSection);
+router.put("/admin/employer/how-we-work/:id", protectedRoute, EmployerController.updateEmployerHowWeWorkSection);
+router.delete("/admin/employer/how-we-work/:id", protectedRoute, EmployerController.deleteEmployerHowWeWorkSection);
+router.patch("/admin/employer/how-we-work/:id/status", protectedRoute, EmployerController.toggleEmployerHowWeWorkSectionStatus);
+
 // Admin routes
 router.get("/admin/employer-how-we-work-steps", protectedRoute, EmployerController.getAdminHowWeWorkSteps);
 router.post("/admin/employer-how-we-work-step", protectedRoute, EmployerController.createEmployerHowWeWorkStep);
